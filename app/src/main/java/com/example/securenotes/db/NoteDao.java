@@ -9,14 +9,14 @@ import java.util.List;
 public interface NoteDao {
 
     @Insert
-    void insert(Note note);
+    void insert (Note note);
 
     @Update
-    void update(Note note);
+    void update (Note note);
 
     @Delete
-    void delete(Note note);
+    void delete (Note note);
 
-    @Query("SELECT * FROM notes ORDER BY timestamp DESC")
+    @Query ("SELECT * FROM notes ORDER BY timestamp DESC")
     LiveData<List<Note>> getAllNotes();
 }

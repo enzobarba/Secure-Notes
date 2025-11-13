@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.ListAdapter; // Adapter moderno per aggiorna
 import androidx.recyclerview.widget.RecyclerView;
 import java.text.DateFormat;
 import java.util.Date;
-import android.graphics.Color;
-import androidx.core.graphics.ColorUtils;
 
 import com.example.securenotes.model.Note;
 import com.example.securenotes.databinding.ItemNoteBinding;

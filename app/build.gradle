@@ -54,4 +54,11 @@ dependencies {
     // RecyclerView e Material (UI)
     implementation libs.recyclerview
     implementation libs.material.v190
+
+    //Abilita la crittografia per il database Room
+    implementation libs.android.database.sqlcipher
+
+    //Fornisce 'EncryptedSharedPreferences'
+    //per salvare la chiave di SQLCipher nel Keystore.
+    implementation libs.security.crypto
 }

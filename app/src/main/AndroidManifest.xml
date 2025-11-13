@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SecureNotes">
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">

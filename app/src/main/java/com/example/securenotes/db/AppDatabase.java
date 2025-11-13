@@ -8,7 +8,7 @@ import com.example.securenotes.model.Note;
 import com.example.securenotes.security.SecurityManager;
 import net.sqlcipher.database.SupportFactory;
 
-@Database (entities = {Note.class}, version = 2)
+@Database (entities = {Note.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase{
 
     public abstract NoteDao noteDao ();

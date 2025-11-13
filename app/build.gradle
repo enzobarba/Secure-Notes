@@ -61,4 +61,7 @@ dependencies {
     //Fornisce 'EncryptedSharedPreferences'
     //per salvare la chiave di SQLCipher nel Keystore.
     implementation libs.security.crypto
+
+    //Per impronta/volto
+    implementation libs.biometric
 }

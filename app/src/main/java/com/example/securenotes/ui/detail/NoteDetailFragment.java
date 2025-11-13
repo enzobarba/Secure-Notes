@@ -35,6 +35,7 @@ public class NoteDetailFragment extends Fragment {
     private String originalContent = "";
     private int currentColor;
     private int originalColor;
+    private boolean originalIsPinned = false;
 
     // "Gonfia" il layout XML
     @Nullable
@@ -67,6 +68,7 @@ public class NoteDetailFragment extends Fragment {
             String title = args.getString("NOTE_TITLE_KEY");
             String content = args.getString("NOTE_CONTENT_KEY");
             originalColor = args.getInt("NOTE_COLOR_KEY");
+            originalIsPinned = args.getBoolean("NOTE_PINNED_KEY");
             originalTitle = title;
             originalContent = content;
             binding.editTextTitle.setText(title);
@@ -106,7 +108,7 @@ public class NoteDetailFragment extends Fragment {
         if (title.isEmpty() && content.isEmpty()) {
             if (currentNoteId != -1) {
                 // Per cancellare, passiamo una nota fittizia solo con l'ID
-                Note noteToDelete = new Note("", "", 0, 0);
+                Note noteToDelete = new Note("", "", 0, 0, false);
                 noteToDelete.id = currentNoteId;
                 noteViewModel.delete(noteToDelete);
             }
@@ -114,7 +116,7 @@ public class NoteDetailFragment extends Fragment {
         }
 
         // Crea la nota da salvare
-        Note note = new Note(title, content, System.currentTimeMillis(), currentColor);
+        Note note = new Note(title, content, System.currentTimeMillis(), currentColor, originalIsPinned);
 
         if (currentNoteId == -1) {
             // È una nota nuova: inserisci

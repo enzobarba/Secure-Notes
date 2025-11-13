@@ -17,6 +17,6 @@ public interface NoteDao {
     @Delete
     void delete (Note note);
 
-    @Query ("SELECT * FROM notes ORDER BY timestamp DESC")
+    @Query ("SELECT * FROM notes ORDER BY isPinned DESC, timestamp DESC")
     LiveData<List<Note>> getAllNotes();
 }

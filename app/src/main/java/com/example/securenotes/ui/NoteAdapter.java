@@ -1,6 +1,7 @@
 package com.example.securenotes.ui;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -22,6 +23,20 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
         void onItemClick(Note note);
     }
     private OnItemClickListener listener;
+
+    /*
+    interfaccia callback che
+    passa sia la Nota che la Vista (la CardView),
+    che ci serve per ancorare il PopupMenu.
+    */
+    public interface OnItemLongClickListener {
+        void onItemLongClick(Note note, View view);
+    }
+    private OnItemLongClickListener longClickListener;
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.longClickListener = listener;
+    }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
@@ -65,6 +80,16 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
                     listener.onItemClick(getItem(position));
                 }
             });
+
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (longClickListener != null && position != RecyclerView.NO_POSITION) {
+                    // Passa la nota e la vista (v)
+                    longClickListener.onItemLongClick(getItem(position), v);
+                    return true; //
+                }
+                return false;
+            });
         }
 
         public void bind(Note note) {
@@ -72,6 +97,11 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
             binding.textViewContent.setText(note.content);
             binding.textViewTimestamp.setText(formatTimestamp(note.timestamp));
             binding.getRoot().setCardBackgroundColor(note.color);
+            if (note.isPinned) {
+                binding.imageViewPin.setVisibility(View.VISIBLE);
+            } else {
+                binding.imageViewPin.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -92,7 +122,8 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
                     return oldItem.title.equals(newItem.title) &&
                             oldItem.content.equals(newItem.content) &&
                             oldItem.timestamp == newItem.timestamp &&
-                            oldItem.color == newItem.color;
+                            oldItem.color == newItem.color &&
+                            oldItem.isPinned == newItem.isPinned;
                 }
             };
 

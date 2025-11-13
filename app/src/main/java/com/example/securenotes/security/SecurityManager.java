@@ -20,13 +20,16 @@ public class SecurityManager {
 
     private static final String PREF_FILE_NAME = "secure_notes_prefs";
     private static final String KEY_DB_PASSPHRASE = "db_passphrase";
+    //Alias univoco per MasterKey DB, senza esso si può usare MasterKey.Builder(context)
+    //ma userebbe alias predefinito _androidx_security_master_key_
+    private static final String DB_MASTER_KEY_ALIAS = "secure_notes_db_master_key";
 
     // Ottiene o crea la passphrase per SQLCipher
     public static synchronized byte[] getDatabasePassphrase(Context context)
             throws GeneralSecurityException, IOException {
 
         // Crea o ottiene la MasterKey dall'Android Keystore
-        MasterKey masterKey = new MasterKey.Builder(context)
+        MasterKey masterKey = new MasterKey.Builder(context, DB_MASTER_KEY_ALIAS)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build();
 

@@ -12,13 +12,15 @@ public class Note {
     public String content;
     public long timestamp;
     public int color;
+    public boolean isPinned;
 
-    public Note (String title, String content, long timestamp, int color) {
+    public Note (String title, String content, long timestamp, int color, boolean isPinned) {
 
         this.title = title;
         this.content = content;
         this.timestamp = timestamp;
         this.color = color;
+        this.isPinned = isPinned;
 
     }
 }

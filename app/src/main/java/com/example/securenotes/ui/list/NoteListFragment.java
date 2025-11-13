@@ -8,6 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.MenuItem;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentNoteListBinding;
@@ -61,6 +65,65 @@ public class NoteListFragment extends Fragment {
         noteAdapter.setOnItemClickListener(note -> {
             navigateToDetail(note); // Passa la nota da modificare
         });
+
+        //Listener per pressione lunga
+        noteAdapter.setOnItemLongClickListener((note, anchorView) -> {
+            // Chiama l'helper per mostrare il menu
+            showContextMenu(note, anchorView);
+        });
+    }
+
+    // Mostra il menu a tendina
+    private void showContextMenu(Note note, View anchorView) {
+        PopupMenu popup = new PopupMenu(requireContext(), anchorView);
+        popup.getMenuInflater().inflate(R.menu.note_context_menu, popup.getMenu());
+
+        // Logica per cambiare il testo "Pin" / "Unpin"
+        MenuItem pinItem = popup.getMenu().findItem(R.id.menu_pin);
+        if (note.isPinned) {
+            pinItem.setTitle(R.string.menu_unpin);
+        } else {
+            pinItem.setTitle(R.string.menu_pin);
+        }
+
+        // Gestisce i click sul menu
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_pin) {
+                togglePinState(note); // Chiama l'helper Pin
+                return true;
+            } else if (itemId == R.id.menu_delete) {
+                confirmDeleteNote(note); // Chiama l'helper Delete
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void togglePinState(Note note) {
+        // Crea una nota aggiornata (timestamp invariato) con lo stato 'isPinned' invertito
+        Note updatedNote = new Note(
+                note.title,
+                note.content,
+                note.timestamp,
+                note.color,
+                !note.isPinned
+        );
+        updatedNote.id = note.id;
+
+        noteViewModel.update(updatedNote);
+    }
+
+    private void confirmDeleteNote(Note note) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.menu_delete)
+                .setMessage("Are you sure you want to delete this note?")
+                .setPositiveButton(R.string.menu_delete, (dialog, which) -> {
+                    noteViewModel.delete(note);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     // Metodo helper per la navigazione
@@ -77,6 +140,7 @@ public class NoteListFragment extends Fragment {
             args.putString("NOTE_TITLE_KEY", note.title);
             args.putString("NOTE_CONTENT_KEY", note.content);
             args.putInt("NOTE_COLOR_KEY", note.color);
+            args.putBoolean("NOTE_PINNED_KEY", note.isPinned);
         }
         detailFragment.setArguments(args);
 

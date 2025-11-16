@@ -1,4 +1,4 @@
-package com.example.securenotes.ui;
+package com.example.securenotes.ui.note;
 
 import android.view.LayoutInflater;
 import android.view.View;

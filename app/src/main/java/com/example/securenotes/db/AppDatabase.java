@@ -5,7 +5,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import com.example.securenotes.model.Note;
-import com.example.securenotes.security.SecurityManager;
+import com.example.securenotes.security.SecurityDbManager;
 import net.sqlcipher.database.SupportFactory;
 
 @Database (entities = {Note.class}, version = 3)
@@ -22,7 +22,7 @@ public abstract class AppDatabase extends RoomDatabase{
             final byte[] passphrase;
             try {
                 // Ottiene la chiave sicura dal SecurityManager
-                passphrase = SecurityManager.getDatabasePassphrase(appContext);
+                passphrase = SecurityDbManager.getDatabasePassphrase(appContext);
             } catch (Exception e) {
                 // Fallimento critico se non si può ottenere la chiave
                 throw new RuntimeException("Impossibile ottenere la passphrase del database", e);

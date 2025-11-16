@@ -16,7 +16,7 @@ Usa EncryptedSharedPreferences (Jetpack Security) per
 salvare una passphrase generata casualmente,
 protetta dall'Android Keystore.
 */
-public class SecurityManager {
+public class SecurityDbManager {
 
     private static final String PREF_FILE_NAME = "secure_notes_prefs";
     private static final String KEY_DB_PASSPHRASE = "db_passphrase";

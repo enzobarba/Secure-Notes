@@ -1,4 +1,4 @@
-package com.example.securenotes.ui.detail;
+package com.example.securenotes.ui.note;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,16 +8,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import android.graphics.Color;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.content.ContextCompat;
 import com.example.securenotes.R;
 
 import com.example.securenotes.databinding.FragmentNoteDetailBinding;
 import com.example.securenotes.model.Note;
 import com.example.securenotes.viewmodel.NoteViewModel;
-
-import java.util.Objects;
 
 /*
 Questo Fragment gestisce l'editor per creare o modificare una nota.
@@ -27,6 +23,7 @@ public class NoteDetailFragment extends Fragment {
 
     private FragmentNoteDetailBinding binding;
     private NoteViewModel noteViewModel;
+
 
     // 'currentNoteId' tiene traccia della nota che stiamo modificando.
     // -1 significa "nota nuova".

@@ -9,7 +9,7 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 import com.example.securenotes.R;
 import com.example.securenotes.security.PinManager;
-import com.example.securenotes.ui.MainActivity;
+import com.example.securenotes.ui.dashboard.MainActivity;
 import java.util.concurrent.Executor;
 
 /*

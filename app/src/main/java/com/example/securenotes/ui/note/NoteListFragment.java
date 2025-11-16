@@ -1,31 +1,51 @@
-package com.example.securenotes.ui.list;
+package com.example.securenotes.ui.note;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.view.MenuItem;
-import androidx.appcompat.widget.PopupMenu;
 
 import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentNoteListBinding;
 import com.example.securenotes.model.Note;
-import com.example.securenotes.ui.NoteAdapter;
-import com.example.securenotes.ui.detail.NoteDetailFragment;
 import com.example.securenotes.viewmodel.NoteViewModel;
 
-//Fragment che mostra la lista di note (la Dashboard)
+/*
+Questo Fragment mostra la lista di note (la Dashboard)
+e gestisce i menu contestuali (pressione lunga).
+*/
 public class NoteListFragment extends Fragment {
 
-    private FragmentNoteListBinding binding; // Riferimento sicuro alle View
+    private FragmentNoteListBinding binding;
     private NoteViewModel noteViewModel;
     private NoteAdapter noteAdapter;
+
+    // Interfaccia "callback" per dire a MainActivity di navigare
+    public interface NoteNavigationListener {
+        void navigateToDetail(int noteId, String title, String content, int color, boolean isPinned);
+    }
+    private NoteNavigationListener navigationListener;
+
+    // Aggancia il listener all'Activity
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        // Controlla che MainActivity implementi l'interfaccia
+        if (context instanceof NoteNavigationListener) {
+            navigationListener = (NoteNavigationListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement NoteNavigationListener");
+        }
+    }
 
     // "Gonfia" il layout XML
     @Nullable
@@ -40,40 +60,40 @@ public class NoteListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Imposta Adapter e RecyclerView
+        // 1. Imposta Adapter e RecyclerView
         noteAdapter = new NoteAdapter();
         binding.recyclerViewNotes.setAdapter(noteAdapter);
 
-        // Collega il ViewModel
+        // 2. Collega il ViewModel (che hai già)
         noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
         // 3. Osserva i dati LiveData dal ViewModel
-        //    eseguito automaticamente quando i dati cambiano.
         noteViewModel.getAllNotes().observe(getViewLifecycleOwner(), notes -> {
-            // Passa la nuova lista all'adapter per aggiornare la UI
             noteAdapter.submitList(notes);
         });
 
         // 4. Imposta i Click Listener
 
-        // Pulsante "+" per una nuova nota
+        // Pulsante "+" (chiama MainActivity)
         binding.fabAddNote.setOnClickListener(v -> {
-            navigateToDetail(null); // 'null' = nuova nota
+            // 'navigationListener' è l'Activity
+            navigationListener.navigateToDetail(-1, "", "", 0, false);
         });
 
-        // Click su una nota esistente
+        // Click corto su una nota (chiama MainActivity)
         noteAdapter.setOnItemClickListener(note -> {
-            navigateToDetail(note); // Passa la nota da modificare
+            navigationListener.navigateToDetail(
+                    note.id, note.title, note.content, note.color, note.isPinned
+            );
         });
 
-        //Listener per pressione lunga
+        // Click lungo (gestito qui)
         noteAdapter.setOnItemLongClickListener((note, anchorView) -> {
-            // Chiama l'helper per mostrare il menu
             showContextMenu(note, anchorView);
         });
     }
 
-    // Mostra il menu a tendina
+    // Mostra il menu a tendina (Popup)
     private void showContextMenu(Note note, View anchorView) {
         PopupMenu popup = new PopupMenu(requireContext(), anchorView);
         popup.getMenuInflater().inflate(R.menu.note_context_menu, popup.getMenu());
@@ -90,10 +110,10 @@ public class NoteListFragment extends Fragment {
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_pin) {
-                togglePinState(note); // Chiama l'helper Pin
+                togglePinState(note);
                 return true;
             } else if (itemId == R.id.menu_delete) {
-                confirmDeleteNote(note); // Chiama l'helper Delete
+                confirmDeleteNote(note); // Metodo helper
                 return true;
             }
             return false;
@@ -101,20 +121,22 @@ public class NoteListFragment extends Fragment {
         popup.show();
     }
 
+    // Logica per "pinnare" (non aggiorna il timestamp)
     private void togglePinState(Note note) {
-        // Crea una nota aggiornata (timestamp invariato) con lo stato 'isPinned' invertito
+        // Crea una nota aggiornata con lo stato 'isPinned' invertito
         Note updatedNote = new Note(
                 note.title,
                 note.content,
-                note.timestamp,
+                note.timestamp, // Preserva il timestamp originale
                 note.color,
-                !note.isPinned
+                !note.isPinned // Inverti il booleano
         );
         updatedNote.id = note.id;
 
         noteViewModel.update(updatedNote);
     }
 
+    // Pop-up di conferma eliminazione
     private void confirmDeleteNote(Note note) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.menu_delete)
@@ -124,31 +146,6 @@ public class NoteListFragment extends Fragment {
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
-    }
-
-    // Metodo helper per la navigazione
-    private void navigateToDetail(@Nullable Note note) {
-        NoteDetailFragment detailFragment = new NoteDetailFragment();
-
-        // Prepara i dati da passare al prossimo fragment
-        Bundle args = new Bundle();
-        if (note == null) {
-            args.putInt("NOTE_ID_KEY", -1); // Segnala "nuova nota"
-        } else {
-            // Passa i dati della nota da modificare
-            args.putInt("NOTE_ID_KEY", note.id);
-            args.putString("NOTE_TITLE_KEY", note.title);
-            args.putString("NOTE_CONTENT_KEY", note.content);
-            args.putInt("NOTE_COLOR_KEY", note.color);
-            args.putBoolean("NOTE_PINNED_KEY", note.isPinned);
-        }
-        detailFragment.setArguments(args);
-
-        // Esegue la transazione del fragment
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, detailFragment)
-                .addToBackStack(null) // FONDAMENTALE per il tasto "Indietro"
-                .commit();
     }
 
     // Pulisce il binding per evitare memory leak

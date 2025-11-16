@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_notes"
+        android:icon="@drawable/ic_notes"
+        android:title="@string/dashboard_title_notes" />
+
+    <item
+        android:id="@+id/menu_files"
+        android:icon="@drawable/ic_archive"
+        android:title="@string/dashboard_title_files" />
+
+</menu>

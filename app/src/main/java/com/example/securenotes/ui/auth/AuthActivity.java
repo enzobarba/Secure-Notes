@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
+import android.view.WindowManager;
 import com.example.securenotes.R;
 import com.example.securenotes.security.PinManager;
 import com.example.securenotes.ui.dashboard.MainActivity;
@@ -26,9 +27,16 @@ public class AuthActivity extends AppCompatActivity implements
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
 
+    private boolean shouldShowBiometricOnResume = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // --- PROTEZIONE SCREENSHOT E ANTEPRIMA ---
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
+
         setContentView(R.layout.activity_auth);
 
         setupBiometricAuth();
@@ -42,6 +50,26 @@ public class AuthActivity extends AppCompatActivity implements
                 // forza la creazione del PIN
                 showCreatePinFragment();
             }
+        }
+    }
+
+
+    // App torna dal background: imposta il flag
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (PinManager.isPinSet(this)) {
+            shouldShowBiometricOnResume = true;
+        }
+    }
+
+    // UI pronta: controlla il flag e mostra il prompt
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (shouldShowBiometricOnResume) {
+            shouldShowBiometricOnResume = false;
+            showBiometricPrompt();
         }
     }
 

@@ -64,4 +64,6 @@ dependencies {
 
     //Per impronta/volto
     implementation libs.biometric
+
+    implementation libs.androidx.lifecycle.process
 }

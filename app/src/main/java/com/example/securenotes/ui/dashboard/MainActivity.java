@@ -3,15 +3,12 @@ package com.example.securenotes.ui.dashboard;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import com.example.securenotes.R;
 import com.example.securenotes.databinding.ActivityMainBinding;
-
 import com.example.securenotes.ui.note.NoteDetailFragment;
 import com.example.securenotes.ui.note.NoteListFragment;
-
-// ERRORE ATTESO QUI
 import com.example.securenotes.ui.archive.FileArchiveFragment;
+import android.view.WindowManager;
 
 /*
 gestisce la BottomNavigationView
@@ -30,6 +27,10 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Impedisce screenshot e oscura l'anteprima nelle App Recenti
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
 
         // Usa ViewBinding per il layout 'activity_main.xml'
         binding = ActivityMainBinding.inflate(getLayoutInflater());

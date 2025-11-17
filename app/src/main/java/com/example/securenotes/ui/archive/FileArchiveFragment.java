@@ -16,7 +16,7 @@ import androidx.biometric.BiometricManager;
 import android.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import com.example.securenotes.ui.auth.EnterPinFilesDialogFragment;
+import com.example.securenotes.ui.auth.EnterPinDialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -31,7 +31,7 @@ Questo Fragment (Refactoring Fatto).
 Delega tutto il lavoro pesante (I/O, Cripto)
 al FileViewModel.
 */
-public class FileArchiveFragment extends Fragment implements EnterPinFilesDialogFragment.PinAuthDialogListener{
+public class FileArchiveFragment extends Fragment implements EnterPinDialogFragment.PinAuthDialogListener{
 
     private FragmentFileArchiveBinding binding;
     private FileAdapter fileAdapter;
@@ -199,7 +199,7 @@ public class FileArchiveFragment extends Fragment implements EnterPinFilesDialog
     //Questo metodo helper crea e mostra il nostro nuovo DialogFragment.
 
     private void showPinDialog() {
-        EnterPinFilesDialogFragment dialog = new EnterPinFilesDialogFragment();
+        EnterPinDialogFragment dialog = new EnterPinDialogFragment();
 
         // 'this' (FileArchiveFragment) è il "genitore"
         // che riceverà il callback.

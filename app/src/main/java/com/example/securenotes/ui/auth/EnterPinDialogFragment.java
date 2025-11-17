@@ -2,7 +2,6 @@ package com.example.securenotes.ui.auth;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,7 @@ Questo DialogFragment (pop-up) usa il metodo
 'setTargetFragment' (deprecato ma semplice)
 per restituire il risultato.
 */
-public class EnterPinFilesDialogFragment extends DialogFragment {
+public class EnterPinDialogFragment extends DialogFragment {
 
     // Interfaccia "callback" per notificare il fragment chiamante
     public interface PinAuthDialogListener {
@@ -28,6 +27,9 @@ public class EnterPinFilesDialogFragment extends DialogFragment {
     }
 
     private PinAuthDialogListener listener;
+
+    // Chiave per passare il titolo personalizzato
+    public static final String ARG_TITLE = "dialog_title";
 
     // Aggancia il listener (che sarà il FileArchiveFragment)
     @Override
@@ -54,7 +56,14 @@ public class EnterPinFilesDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_enter_pin_files, null);
         final EditText pinInput = view.findViewById(R.id.editTextPinDialog);
 
-        builder.setTitle("Insert PIN")
+        String title = "Insert PIN";
+
+        // Controlliamo se chi ci ha chiamato ci ha passato un titolo specifico
+        if (getArguments() != null && getArguments().containsKey(ARG_TITLE)) {
+            title = getArguments().getString(ARG_TITLE);
+        }
+
+        builder.setTitle(title)
                 .setView(view)
                 .setPositiveButton("Unlock", (dialog, id) -> {
                     String pin = pinInput.getText().toString();

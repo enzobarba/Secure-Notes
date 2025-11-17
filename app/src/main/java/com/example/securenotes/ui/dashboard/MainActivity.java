@@ -9,13 +9,17 @@ import com.example.securenotes.ui.note.NoteDetailFragment;
 import com.example.securenotes.ui.note.NoteListFragment;
 import com.example.securenotes.ui.archive.FileArchiveFragment;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.example.securenotes.ui.auth.CreatePinFragment;
+import com.example.securenotes.ui.settings.SettingsFragment;
 
 /*
 gestisce la BottomNavigationView
 e implementa il 'listener' di NoteListFragment per
 navigare ai dettagli.
 */
-public class MainActivity extends AppCompatActivity implements NoteListFragment.NoteNavigationListener {
+public class MainActivity extends AppCompatActivity implements NoteListFragment.NoteNavigationListener, CreatePinFragment.PinCreationListener{
 
     private ActivityMainBinding binding;
 
@@ -23,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
     private final NoteListFragment noteListFragment = new NoteListFragment();
 
     private final FileArchiveFragment fileArchiveFragment = new FileArchiveFragment();
+
+    private final SettingsFragment settingsFragment = new SettingsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
                 selectedFragment = noteListFragment;
             } else if (itemId == R.id.menu_files) {
                 selectedFragment = fileArchiveFragment; // ERRORE
+            }
+            else if (itemId == R.id.menu_settings) { // <-- ADDED CASE
+                selectedFragment = settingsFragment;
             }
 
             if (selectedFragment != null) {
@@ -88,5 +97,12 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
                 // Aggiungi alla "cronologia" per il tasto "Indietro"
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onPinCreated() {
+        Toast.makeText(this, "PIN changed successfully!", Toast.LENGTH_SHORT).show();
+        // Torna indietro (al SettingsFragment)
+        getSupportFragmentManager().popBackStack();
     }
 }

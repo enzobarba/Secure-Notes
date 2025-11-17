@@ -11,4 +11,9 @@
         android:icon="@drawable/ic_archive"
         android:title="@string/dashboard_title_files" />
 
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/dash_settings" />
+
 </menu>

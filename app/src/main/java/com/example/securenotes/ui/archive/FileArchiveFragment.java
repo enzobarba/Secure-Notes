@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.biometric.BiometricManager;
 import android.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
@@ -184,7 +185,14 @@ public class FileArchiveFragment extends Fragment implements EnterPinFilesDialog
                 .setNegativeButtonText("Usa PIN") // Testo aggiornato
                 .build();
 
-        biometricPrompt.authenticate(promptInfo);
+        if (canUseBiometrics()) {
+            // Se sì, mostra il prompt
+            biometricPrompt.authenticate(promptInfo);
+        } else {
+            // Se no (es. emulatore senza impronte),
+            // salta direttamente al PIN Dialog.
+            showPinDialog();
+        }
     }
 
 
@@ -270,6 +278,12 @@ public class FileArchiveFragment extends Fragment implements EnterPinFilesDialog
                 })
                 .setNegativeButton("Cancel", null) // "Annulla"
                 .show(); // Mostra il pop-up
+    }
+
+    private boolean canUseBiometrics() {
+        BiometricManager biometricManager = BiometricManager.from(requireContext());
+        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
     // Pulisci il binding

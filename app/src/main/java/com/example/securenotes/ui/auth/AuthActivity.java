@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricPrompt;
+import androidx.biometric.BiometricManager;
 import androidx.core.content.ContextCompat;
 import android.view.WindowManager;
 import com.example.securenotes.R;
@@ -114,7 +115,21 @@ public class AuthActivity extends AppCompatActivity implements
 
     // Mostra il pop-up
     private void showBiometricPrompt() {
-        biometricPrompt.authenticate(promptInfo);
+        // 1. Chiedi al sistema se la biometria è pronta
+        //Si permette a dispositivi senza auth biometrica di usare l'app col pin
+        BiometricManager biometricManager = BiometricManager.from(this);
+        int canAuthenticate = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
+
+        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+            // 2a. Se è tutto ok, mostra il prompt
+            if (!isFinishing() && !isDestroyed()) {
+                biometricPrompt.authenticate(promptInfo);
+            }
+        } else {
+            // 2b. Se c'è un QUALSIASI problema (niente hardware, niente impronte, ecc.)
+            // vai SUBITO al PIN. Non lasciare lo schermo bianco.
+            showEnterPinFragment();
+        }
     }
 
     // Carica il fragment per creare PIN

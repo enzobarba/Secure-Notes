@@ -17,7 +17,7 @@ in EncryptedSharedPreferences.
 */
 public class PinManager {
 
-    private static final String PIN_PREF_FILE_NAME = "secure_notes_pin_prefs.xml";
+    private static final String PIN_PREF_FILE_NAME = "secure_notes_pin_prefs";
     private static final String KEY_PIN_HASH = "pin_hash";
     private static final String PIN_MASTER_KEY_ALIAS = "secure_notes_pin_master_key";
 

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

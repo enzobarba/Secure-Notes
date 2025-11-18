@@ -45,7 +45,7 @@ public class PinManager {
             byte[] hashBytes = digest.digest(pin.getBytes(StandardCharsets.UTF_8));
             return bytesToHex(hashBytes);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Impossibile trovare SHA-256", e);
+            throw new RuntimeException("Impossible to find SHA-256", e);
         }
     }
 

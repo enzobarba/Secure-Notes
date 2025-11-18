@@ -34,8 +34,6 @@ import javax.crypto.spec.SecretKeySpec;
 public class BackupWorker extends Worker {
 
     public static final String KEY_PASSWORD = "backup_password";
-    private static final String TAG = "BackupWorker"; // Tag per il Logcat
-
     private static final int SALT_LENGTH = 16;
     private static final int IV_LENGTH = 12;
     private static final int KEY_LENGTH = 256;
@@ -78,14 +76,14 @@ public class BackupWorker extends Worker {
             }
 
             if (backupUri == null) {
-                throw new Exception("Impossibile creare file in MediaStore");
+                throw new Exception("Impossible to create file in MediaStore");
             }
 
             // Apri il flusso di scrittura verso quell'URI
             fos = getApplicationContext().getContentResolver().openOutputStream(backupUri);
 
             if (fos == null) {
-                throw new Exception("Impossibile aprire OutputStream");
+                throw new Exception("Impossible to open OutputStream");
             }
 
             // 3. Genera Salt e IV

@@ -25,7 +25,7 @@ public abstract class AppDatabase extends RoomDatabase{
                 passphrase = SecurityDbManager.getDatabasePassphrase(appContext);
             } catch (Exception e) {
                 // Fallimento critico se non si può ottenere la chiave
-                throw new RuntimeException("Impossibile ottenere la passphrase del database", e);
+                throw new RuntimeException("Impossible to obtain passphrase DB", e);
             }
 
             // Crea SQLCipher con la chiave

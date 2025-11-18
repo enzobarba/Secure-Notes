@@ -2,7 +2,6 @@ package com.example.securenotes.viewmodel;
 
 import android.app.Application;
 import android.net.Uri;
-import android.util.Log; // <-- IMPORT AGGIUNTO
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.AndroidViewModel;
@@ -13,9 +12,6 @@ import java.io.File;
 import java.util.List;
 
 public class FileViewModel extends AndroidViewModel {
-
-    // TAG per il Logcat
-    private static final String TAG = "FileViewModel";
 
     private final FileRepository fileRepository;
     private final MutableLiveData<List<File>> _fileList = new MutableLiveData<>();
@@ -45,7 +41,6 @@ public class FileViewModel extends AndroidViewModel {
                 _toastMessage.postValue("File successfully imported!");
             } catch (Exception e) {
                 // Logga anche gli errori di importazione
-                Log.e(TAG, "Importazione fallita", e);
                 _toastMessage.postValue("Importation failed: " + e.getMessage());
             }
         });
@@ -65,9 +60,8 @@ public class FileViewModel extends AndroidViewModel {
             } catch (Exception e) {
                 // CORREZIONE DI DEBUG:
                 // 1. Stampa l'errore completo nel Logcat
-                Log.e(TAG, "Impossibile decrittare file!", e);
                 // 2. Mostra il vero messaggio di errore all'utente
-                _toastMessage.postValue("Errore: " + e.getMessage());
+                _toastMessage.postValue("Error: " + e.getMessage());
             }
         });
     }

@@ -10,6 +10,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+
+import com.example.securenotes.viewmodel.FileViewModel;
+import com.example.securenotes.viewmodel.NoteViewModel;
+import com.example.securenotes.service.BackupWorker;
 
 import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentSettingsBinding;
@@ -22,10 +31,14 @@ Fragment delle Impostazioni.
 Gestisce Timeout e Cambio PIN.
 */
 public class SettingsFragment extends Fragment implements
-        EnterPinDialogFragment.PinAuthDialogListener { // <-- Implementa l'interfaccia del Dialog
+        EnterPinDialogFragment.PinAuthDialogListener,
+        BackupPasswordDialogFragment.BackupPasswordListener{ // <-- Implementa l'interfaccia del Dialog
 
     private FragmentSettingsBinding binding;
     private SharedPreferences prefs;
+
+    private NoteViewModel noteViewModel;
+    private FileViewModel fileViewModel;
 
     public static final String PREFS_NAME = "app_settings";
     public static final String KEY_TIMEOUT = "timeout_ms";
@@ -43,6 +56,12 @@ public class SettingsFragment extends Fragment implements
 
         prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
+        // 1. Inizializziamo i ViewModel per controllare i dati
+                noteViewModel = new ViewModelProvider(requireActivity()).get(NoteViewModel.class);
+        fileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
+        // Forziamo il caricamento dei file per essere sicuri di avere il numero aggiornato
+        fileViewModel.refreshFileList();
+
         // --- LOGICA TIMEOUT ---
         long currentTimeout = prefs.getLong(KEY_TIMEOUT, 3 * 60 * 1000);
 
@@ -56,7 +75,8 @@ public class SettingsFragment extends Fragment implements
             else if (checkedId == R.id.radio5Min) newTimeout = 5 * 60 * 1000;
 
             prefs.edit().putLong(KEY_TIMEOUT, newTimeout).apply();
-            Toast.makeText(getContext(), "Timeout aggiornato!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Timeout updated!", Toast.LENGTH_SHORT).show();
+
         });
 
         // --- LOGICA CAMBIO PIN ---
@@ -67,13 +87,26 @@ public class SettingsFragment extends Fragment implements
 
         // --- LOGICA BACKUP (Per domani) ---
         binding.btnExportBackup.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Funzionalità Backup in arrivo!", Toast.LENGTH_SHORT).show();
+            boolean hasNotes = false;
+            boolean hasFiles = false;
+            if (noteViewModel.getAllNotes().getValue() != null &&
+                    !noteViewModel.getAllNotes().getValue().isEmpty()) {
+                hasNotes = true;
+            }
+            if (fileViewModel.fileList.getValue() != null &&
+                    !fileViewModel.fileList.getValue().isEmpty()) {
+                hasFiles = true;
+            }
+            if (!hasNotes && !hasFiles) {
+               Toast.makeText(getContext(), "No data to save.", Toast.LENGTH_SHORT).show();
+            } else {
+                showBackupPasswordDialog();
+            }
         });
     }
 
-    /*
-    METODO AGGIUNTO: Mostra il pop-up con titolo personalizzato
-    */
+
+    //Mostra il pop-up con titolo personalizzato
     private void showVerifyPinDialog() {
         EnterPinDialogFragment dialog = new EnterPinDialogFragment();
 
@@ -99,7 +132,44 @@ public class SettingsFragment extends Fragment implements
                 .addToBackStack(null)
                 .commit();
 
-        Toast.makeText(getContext(), "Insert new PIN", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Insert new PIN", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showBackupPasswordDialog() {
+        BackupPasswordDialogFragment dialog = new BackupPasswordDialogFragment();
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getParentFragmentManager(), "BackupDialog");
+    }
+
+
+    //Viene chiamato quando l'utente ha scelto la password e premuto "Avvia". Si lancia il workManager
+
+    @Override
+    public void onBackupPasswordSet(String password) {
+        Toast.makeText(getContext(), "Backup running ...", Toast.LENGTH_SHORT).show();
+
+        // 1. Prepara i dati da inviare al Worker (la password)
+        Data inputData = new Data.Builder()
+                .putString(BackupWorker.KEY_PASSWORD, password)
+                .build();
+
+        // 2. Crea la richiesta di lavoro (OneTime = una volta sola)
+        OneTimeWorkRequest backupRequest = new OneTimeWorkRequest.Builder(BackupWorker.class)
+                .setInputData(inputData) // Allega la password
+                .build();
+
+        // 3. Metti in coda il lavoro
+        WorkManager.getInstance(requireContext()).enqueue(backupRequest);
+
+        // 4. (Opzionale) Osserva lo stato per sapere quando finisce
+        WorkManager.getInstance(requireContext()).getWorkInfoByIdLiveData(backupRequest.getId())
+                .observe(getViewLifecycleOwner(), workInfo -> {
+                    if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Toast.makeText(getContext(), "Backup saved in Download!", Toast.LENGTH_SHORT).show();
+                    } else if (workInfo != null && workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(getContext(), "Backup Failed.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

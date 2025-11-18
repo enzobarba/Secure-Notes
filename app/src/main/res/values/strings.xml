@@ -27,12 +27,9 @@
     <string name="timeout_five_min">5 Minutes</string>
     <string name="data_management">Data Management</string>
     <string name="export_enc_backup">Export Encrypted Backup</string>
-
-
-
-
-
-
+    <string name="password_backup">Password Backup</string>
+    <string name="advice_password_backup">Choose a secure password. If you forgot it, you will lose your backup</string>
+    <string name="password">Password</string>
 
 
 </resources>

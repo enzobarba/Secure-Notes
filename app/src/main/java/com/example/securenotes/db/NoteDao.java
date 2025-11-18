@@ -19,4 +19,11 @@ public interface NoteDao {
 
     @Query ("SELECT * FROM notes ORDER BY isPinned DESC, timestamp DESC")
     LiveData<List<Note>> getAllNotes();
+
+    /*
+    Non restituisce LiveData (asincrono), ma una List diretta (sincrona).
+    Possiamo usarlo perché il BackupWorker è già in un thread background.
+    */
+    @Query("SELECT * FROM notes")
+    List<Note> getAllNotesDirect();
 }

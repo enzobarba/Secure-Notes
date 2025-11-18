@@ -21,7 +21,7 @@
     <string name="dash_settings">Settings</string>
     <string name="sec_settings">Security Settings</string>
     <string name="change_pin">Change PIN</string>
-    <string name="session_timeout">Session Timeout (Auto-Lock)</string>
+    <string name="session_timeout">Session Timeout (Background Auto-Lock)</string>
     <string name="timeout_one_min">1 Minutes</string>
     <string name="timeout_three_min">3 Minutes (Default)</string>
     <string name="timeout_five_min">5 Minutes</string>
@@ -30,6 +30,9 @@
     <string name="password_backup">Password Backup</string>
     <string name="advice_password_backup">Choose a secure password. If you forgot it, you will lose your backup</string>
     <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password_requirements">Requirements: 12 char, Upper, Num, Symbol</string>
+    <string name="error">Error</string>
 
 
 </resources>

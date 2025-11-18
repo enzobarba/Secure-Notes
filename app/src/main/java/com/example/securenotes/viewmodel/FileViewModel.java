@@ -46,7 +46,6 @@ public class FileViewModel extends AndroidViewModel {
         });
     }
 
-    // Metodo di decrittografia con logging degli errori
     public void decryptAndPrepareFile(File encryptedFile) {
         fileRepository.getExecutor().execute(() -> {
             try {
@@ -58,9 +57,6 @@ public class FileViewModel extends AndroidViewModel {
                 );
                 _decryptedFileUri.postValue(fileUri);
             } catch (Exception e) {
-                // CORREZIONE DI DEBUG:
-                // 1. Stampa l'errore completo nel Logcat
-                // 2. Mostra il vero messaggio di errore all'utente
                 _toastMessage.postValue("Error: " + e.getMessage());
             }
         });

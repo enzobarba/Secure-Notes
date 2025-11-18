@@ -46,7 +46,7 @@ def decrypt_backup(encrypted_file_path, password, output_zip_path):
         print("ERROR: wrong password or corrupted file.")
         print(e)
 
-# change input name with file name of encrypted backup
+# change input_file with file name of encrypted backup
 input_file = "SecureNotes_Backup_20251118_113945.enc" 
 output_file = "unlocked_backup.zip"
 user_pass = input("Insert password for backup: ")

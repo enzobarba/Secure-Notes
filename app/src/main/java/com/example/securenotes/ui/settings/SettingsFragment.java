@@ -57,8 +57,15 @@ public class SettingsFragment extends Fragment implements
         prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
         // 1. Inizializziamo i ViewModel per controllare i dati
-                noteViewModel = new ViewModelProvider(requireActivity()).get(NoteViewModel.class);
+        noteViewModel = new ViewModelProvider(requireActivity()).get(NoteViewModel.class);
         fileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
+
+        // IMPORTANTE: "Sveglia" i LiveData!
+        // Aggiungiamo degli osservatori vuoti. Questo costringe Room
+        // e il Repository a caricare i dati in memoria, così
+        // quando chiameremo .getValue() nel click listener, non sarà null.
+        noteViewModel.getAllNotes().observe(getViewLifecycleOwner(), notes -> {});
+        fileViewModel.fileList.observe(getViewLifecycleOwner(), files -> {});
         // Forziamo il caricamento dei file per essere sicuri di avere il numero aggiornato
         fileViewModel.refreshFileList();
 
@@ -143,7 +150,6 @@ public class SettingsFragment extends Fragment implements
 
 
     //Viene chiamato quando l'utente ha scelto la password e premuto "Avvia". Si lancia il workManager
-
     @Override
     public void onBackupPasswordSet(String password) {
         Toast.makeText(getContext(), "Backup running ...", Toast.LENGTH_SHORT).show();

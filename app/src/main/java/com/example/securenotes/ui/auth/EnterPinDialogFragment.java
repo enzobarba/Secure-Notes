@@ -42,7 +42,7 @@ public class EnterPinDialogFragment extends DialogFragment {
         if (getTargetFragment() instanceof PinAuthDialogListener) {
             listener = (PinAuthDialogListener) getTargetFragment();
         } else {
-            throw new RuntimeException("Il Fragment genitore (target) deve implementare PinAuthDialogListener");
+            throw new RuntimeException("Parent Fragment (target) must implement PinAuthDialogListener");
         }
     }
 
@@ -56,7 +56,7 @@ public class EnterPinDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_enter_pin_files, null);
         final EditText pinInput = view.findViewById(R.id.editTextPinDialog);
 
-        String title = "Insert PIN";
+        String title = getString(R.string.insert_pin);
 
         // Controlliamo se chi ci ha chiamato ci ha passato un titolo specifico
         if (getArguments() != null && getArguments().containsKey(ARG_TITLE)) {
@@ -65,17 +65,17 @@ public class EnterPinDialogFragment extends DialogFragment {
 
         builder.setTitle(title)
                 .setView(view)
-                .setPositiveButton("Unlock", (dialog, id) -> {
+                .setPositiveButton(R.string.unlock, (dialog, id) -> {
                     String pin = pinInput.getText().toString();
 
                     // Riutilizza PinManager
                     if (PinManager.isPinCorrect(getContext(), pin)) {
                         listener.onPinAuthDialogSucceeded(); // Successo
                     } else {
-                        Toast.makeText(getContext(), "Wrong PIN", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.wrong_pin, Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNegativeButton("Cancel", (dialog, id) -> {
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {
                     dialog.cancel();
                 });
 

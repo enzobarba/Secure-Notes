@@ -7,6 +7,8 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.securenotes.R;
 import com.example.securenotes.repository.FileRepository;
 import java.io.File;
 import java.util.List;
@@ -38,10 +40,10 @@ public class FileViewModel extends AndroidViewModel {
             try {
                 fileRepository.encryptFile(getApplication(), fileUri);
                 refreshFileList();
-                _toastMessage.postValue("File successfully imported!");
+                _toastMessage.postValue(getApplication().getString(R.string.file_imported));
             } catch (Exception e) {
                 // Logga anche gli errori di importazione
-                _toastMessage.postValue("Importation failed: " + e.getMessage());
+                _toastMessage.postValue(getApplication().getString(R.string.file_not_imported));
             }
         });
     }
@@ -57,7 +59,7 @@ public class FileViewModel extends AndroidViewModel {
                 );
                 _decryptedFileUri.postValue(fileUri);
             } catch (Exception e) {
-                _toastMessage.postValue("Error: " + e.getMessage());
+                _toastMessage.postValue(R.string.error + e.getMessage());
             }
         });
     }
@@ -69,12 +71,12 @@ public class FileViewModel extends AndroidViewModel {
                 if (fileRepository.deleteFile(fileToDelete)) {
                     // Successo: ricarica la lista e invia un Toast
                     refreshFileList();
-                    _toastMessage.postValue("File deleted");
+                    _toastMessage.postValue(getApplication().getString(R.string.file_deleted));
                 } else {
-                    _toastMessage.postValue("Eliminazione fallita.");
+                    _toastMessage.postValue(getApplication().getString(R.string.file_not_deleted));
                 }
             } catch (Exception e) {
-                _toastMessage.postValue("Error during deletation.");
+                _toastMessage.postValue(getApplication().getString(R.string.file_not_deleted));
             }
         });
     }

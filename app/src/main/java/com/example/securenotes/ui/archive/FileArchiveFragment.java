@@ -158,7 +158,6 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
 
                     @Override
                     public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                        // SUCCESSO!
                         // Chiamiamo il ViewModel (passando il file
                         // che abbiamo salvato).
                         fileViewModel.decryptAndPrepareFile(fileToOpen);
@@ -180,9 +179,9 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
         biometricPrompt = new BiometricPrompt(this, biometricExecutor, callback);
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Verifica Identità")
-                .setSubtitle("Autenticazione richiesta per aprire il file")
-                .setNegativeButtonText("Usa PIN") // Testo aggiornato
+                .setTitle(getString(R.string.verify_identity))
+                .setSubtitle(getString(R.string.auth_required))
+                .setNegativeButtonText(getString(R.string.use_pin))
                 .build();
 
         if (canUseBiometrics()) {
@@ -190,7 +189,6 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
             biometricPrompt.authenticate(promptInfo);
         } else {
             // Se no (es. emulatore senza impronte),
-            // salta direttamente al PIN Dialog.
             showPinDialog();
         }
     }
@@ -233,7 +231,7 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
             openIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(openIntent);
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Nessuna app trovata per aprire questo file", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.no_app_found, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -270,13 +268,13 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
     private void confirmDeleteFile(File file) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.menu_delete) // "Delete"
-                .setMessage("Are you sure you want to delete this file?\n\n" + file.getName())
+                .setMessage(getString(R.string.delete_file) + "\n" + file.getName())
                 .setPositiveButton(R.string.menu_delete, (dialog, which) -> {
                     // Se l'utente clicca "Elimina",
                     // chiama il nostro nuovo metodo del ViewModel.
                     fileViewModel.deleteFile(file);
                 })
-                .setNegativeButton("Cancel", null) // "Annulla"
+                .setNegativeButton( R.string.cancel, null) // "Annulla"
                 .show(); // Mostra il pop-up
     }
 

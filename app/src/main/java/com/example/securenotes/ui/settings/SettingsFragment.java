@@ -82,7 +82,7 @@ public class SettingsFragment extends Fragment implements
             else if (checkedId == R.id.radio5Min) newTimeout = 5 * 60 * 1000;
 
             prefs.edit().putLong(KEY_TIMEOUT, newTimeout).apply();
-            Toast.makeText(getContext(), "Timeout updated!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.timeout_updated, Toast.LENGTH_SHORT).show();
 
         });
 
@@ -105,7 +105,7 @@ public class SettingsFragment extends Fragment implements
                 hasFiles = true;
             }
             if (!hasNotes && !hasFiles) {
-               Toast.makeText(getContext(), "No data to save.", Toast.LENGTH_SHORT).show();
+               Toast.makeText(getContext(), R.string.no_data_to_backup, Toast.LENGTH_SHORT).show();
             } else {
                 showBackupPasswordDialog();
             }
@@ -119,7 +119,7 @@ public class SettingsFragment extends Fragment implements
 
         // Passiamo il titolo "Insert OLD PIN"
         Bundle args = new Bundle();
-        args.putString(EnterPinDialogFragment.ARG_TITLE, "Insert old PIN");
+        args.putString(EnterPinDialogFragment.ARG_TITLE, getString(R.string.insert_old_pin));
         dialog.setArguments(args);
 
         dialog.setTargetFragment(this, 0);
@@ -139,7 +139,7 @@ public class SettingsFragment extends Fragment implements
                 .addToBackStack(null)
                 .commit();
 
-        Toast.makeText(getContext(), "Insert new PIN", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.create_pin, Toast.LENGTH_SHORT).show();
     }
 
     private void showBackupPasswordDialog() {
@@ -152,7 +152,7 @@ public class SettingsFragment extends Fragment implements
     //Viene chiamato quando l'utente ha scelto la password e premuto "Avvia". Si lancia il workManager
     @Override
     public void onBackupPasswordSet(String password) {
-        Toast.makeText(getContext(), "Backup running ...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.backup_running, Toast.LENGTH_SHORT).show();
 
         // 1. Prepara i dati da inviare al Worker (la password)
         Data inputData = new Data.Builder()
@@ -171,9 +171,9 @@ public class SettingsFragment extends Fragment implements
         WorkManager.getInstance(requireContext()).getWorkInfoByIdLiveData(backupRequest.getId())
                 .observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        Toast.makeText(getContext(), "Backup saved in Download!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.backup_saved, Toast.LENGTH_SHORT).show();
                     } else if (workInfo != null && workInfo.getState() == WorkInfo.State.FAILED) {
-                        Toast.makeText(getContext(), "Backup Failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.backup_failed, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -107,9 +107,9 @@ public class AuthActivity extends AppCompatActivity implements
 
         // Testo del pop-up
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Access to SecureNotes")
-                .setSubtitle("Use your footprint or face")
-                .setNegativeButtonText("Use PIN")
+                .setTitle(getString(R.string.access_sec_notes))
+                .setSubtitle(getString(R.string.auth_required))
+                .setNegativeButtonText(getString(R.string.use_pin))
                 .build();
     }
 

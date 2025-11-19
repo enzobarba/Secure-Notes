@@ -45,9 +45,9 @@ public class BackupPasswordDialogFragment extends DialogFragment {
         final TextView tvError = view.findViewById(R.id.tvErrorMsg);
 
         builder.setView(view)
-                .setTitle("Create Backup")
-                .setPositiveButton("Start", null)
-                .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
+                .setTitle(R.string.create_backup)
+                .setPositiveButton(R.string.start, null)
+                .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.cancel());
 
         //  Creiamo il Dialog
         AlertDialog dialog = builder.create();
@@ -66,7 +66,7 @@ public class BackupPasswordDialogFragment extends DialogFragment {
 
                 // 1. Controlla se sono uguali
                 if (!password.equals(confirm)) {
-                    showError(tvError, "Passwords are not the same!");
+                    showError(tvError, getString(R.string.passwords_not_equal));
                     return;
                 }
 
@@ -75,7 +75,7 @@ public class BackupPasswordDialogFragment extends DialogFragment {
                     listener.onBackupPasswordSet(password);
                     dialog.dismiss();
                 } else {
-                    showError(tvError, "Weak password. Respect requirements above.");
+                    showError(tvError, getString(R.string.weak_password));
                 }
             });
         });

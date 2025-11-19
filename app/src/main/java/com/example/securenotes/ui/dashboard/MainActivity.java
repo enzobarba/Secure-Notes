@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
 
     @Override
     public void onPinCreated() {
-        Toast.makeText(this, "PIN changed successfully!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.pin_changed, Toast.LENGTH_SHORT).show();
         // Torna indietro (al SettingsFragment)
         getSupportFragmentManager().popBackStack();
     }

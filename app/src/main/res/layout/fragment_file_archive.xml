@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Importa file"
+        android:contentDescription="@string/import_file"
         app:srcCompat="@drawable/ic_import_file" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

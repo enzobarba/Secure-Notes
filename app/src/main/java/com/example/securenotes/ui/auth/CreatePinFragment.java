@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentCreatePinBinding;
 import com.example.securenotes.security.PinManager;
 
@@ -55,9 +56,9 @@ public class CreatePinFragment extends Fragment {
 
             // Logica di validazione e salvataggio
             if (pin1.length() < 4) {
-                Toast.makeText(getContext(), "PIN must be 4 or more digits", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.settings_pin, Toast.LENGTH_SHORT).show();
             } else if (!pin1.equals(pin2)) {
-                Toast.makeText(getContext(), "PINs don't match", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.pins_not_equal, Toast.LENGTH_SHORT).show();
             } else {
                 // Chiama il PinManager per salvare l'hash
                 PinManager.savePin(requireContext(), pin1);

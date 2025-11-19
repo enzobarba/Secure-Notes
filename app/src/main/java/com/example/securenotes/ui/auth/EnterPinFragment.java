@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
+import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentEnterPinBinding;
 import com.example.securenotes.security.PinManager;
 
@@ -57,8 +57,7 @@ public class EnterPinFragment extends Fragment {
                 // PIN CORRETTO: Notifica l'activity
                 listener.onPinAuthenticated();
             } else {
-                // PIN ERRATO: Mostra errore
-                Toast.makeText(getContext(), "Incorrect PIN", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.wrong_pin, Toast.LENGTH_SHORT).show();
             }
         });
     }

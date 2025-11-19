@@ -140,11 +140,11 @@ public class NoteListFragment extends Fragment {
     private void confirmDeleteNote(Note note) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.menu_delete)
-                .setMessage("Are you sure you want to delete this note?")
+                .setMessage(R.string.delete_note)
                 .setPositiveButton(R.string.menu_delete, (dialog, which) -> {
                     noteViewModel.delete(note);
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

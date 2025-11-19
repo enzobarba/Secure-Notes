@@ -1,21 +1,29 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Ignora i warning generici
+-ignorewarnings
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Mantieni classi di AndroidX
+-keep class androidx.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Mantieni classi usate dalla Biometric API
+-keep class androidx.biometric.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Mantieni i tuoi Modelli (per Room)
+-keep class com.example.securenotes.model.** { *; }
+
+# Mantieni la tua Application (Entry point)
+-keep class com.example.securenotes.SecureNotesApplication { *; }
+
+# Mantieni i Worker (per il Backup)
+-keep class com.example.securenotes.worker.** { *; }
+
+# Mantieni SQLCipher
+-keep class net.sqlcipher.** { *; }
+-keep class net.sqlcipher.database.** { *; }
+
+# Mantieni Jetpack Security
+-keep class androidx.security.crypto.** { *; }
+
+# Mantieni Room
+-keepclassmembers class * {
+    @androidx.room.* <methods>;
+}

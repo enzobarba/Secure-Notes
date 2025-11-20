@@ -59,5 +59,11 @@
     <string name="file_not_imported">Errore durante l\'importazione del file</string>
     <string name="file_deleted">File cancellato</string>
     <string name="file_not_deleted">Errore durante la cancellazione del file</string>
+    <string name="device_not_safe">Device insicuro</string>
+    <string name ="advice_device_not_safe">"Il dispositivo ha i permessi di root.\n\n" +
+    "Per la sicurezza dei tuoi dati cifrati, " +
+        "SecureNotes non può essere eseguito in un ambiente insicuro."</string>
+    <string name="close_app">Chiudi App</string>
+
 
 </resources>

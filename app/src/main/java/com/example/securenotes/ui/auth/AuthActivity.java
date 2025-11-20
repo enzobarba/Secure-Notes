@@ -13,7 +13,8 @@ import com.example.securenotes.R;
 import com.example.securenotes.security.PinManager;
 import com.example.securenotes.ui.dashboard.MainActivity;
 import java.util.concurrent.Executor;
-
+import com.scottyab.rootbeer.RootBeer;
+import android.app.AlertDialog;
 
 /*
 1. Controlla se esiste un PIN.
@@ -40,6 +41,11 @@ public class AuthActivity extends AppCompatActivity implements
                 WindowManager.LayoutParams.FLAG_SECURE);
 
         setContentView(R.layout.activity_auth);
+
+        if(isDeviceRooted()){
+            showRootErrorAndExit();
+            return;
+        }
         setupBiometricAuth();
 
         if (savedInstanceState == null) {
@@ -158,5 +164,23 @@ public class AuthActivity extends AppCompatActivity implements
     @Override
     public void onPinAuthenticated() {
         navigateToMainApp();
+    }
+
+    private boolean isDeviceRooted() {
+        RootBeer rootBeer = new RootBeer(this);
+        return rootBeer.isRooted();
+    }
+
+    private void showRootErrorAndExit() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.device_not_safe)
+                .setMessage(R.string.advice_device_not_safe)
+                .setCancelable(false) // L'utente NON può cliccare fuori per chiuderlo
+                .setPositiveButton(R.string.close_app, (dialog, which) -> {
+                    // Chiude l'app completamente
+                    finishAffinity();
+                    System.exit(0);
+                })
+                .show();
     }
 }

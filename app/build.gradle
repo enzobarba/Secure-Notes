@@ -63,4 +63,7 @@ dependencies {
     implementation libs.biometric
 
     implementation libs.androidx.lifecycle.process
+
+    //Root detection
+    implementation libs.rootbeer.lib
 }

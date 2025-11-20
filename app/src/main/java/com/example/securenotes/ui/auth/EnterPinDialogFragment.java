@@ -14,14 +14,9 @@ import androidx.fragment.app.DialogFragment;
 import com.example.securenotes.R;
 import com.example.securenotes.security.PinManager;
 
-/*
-Questo DialogFragment (pop-up) usa il metodo
-'setTargetFragment' (deprecato ma semplice)
-per restituire il risultato.
-*/
 public class EnterPinDialogFragment extends DialogFragment {
 
-    // Interfaccia "callback" per notificare il fragment chiamante
+    // Interfaccia callback per notificare il fragment chiamante
     public interface PinAuthDialogListener {
         void onPinAuthDialogSucceeded();
     }
@@ -35,9 +30,7 @@ public class EnterPinDialogFragment extends DialogFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        // CORREZIONE BUG:
-        // Usa getTargetFragment() (deprecato) per trovare il listener
+        // Usa getTargetFragment() per trovare il listener
         // che è stato impostato da FileArchiveFragment.
         if (getTargetFragment() instanceof PinAuthDialogListener) {
             listener = (PinAuthDialogListener) getTargetFragment();
@@ -58,7 +51,7 @@ public class EnterPinDialogFragment extends DialogFragment {
 
         String title = getString(R.string.insert_pin);
 
-        // Controlliamo se chi ci ha chiamato ci ha passato un titolo specifico
+        // Si controlla se si ha ricevuto un titolo specifico da mostrare
         if (getArguments() != null && getArguments().containsKey(ARG_TITLE)) {
             title = getArguments().getString(ARG_TITLE);
         }
@@ -70,7 +63,7 @@ public class EnterPinDialogFragment extends DialogFragment {
 
                     // Riutilizza PinManager
                     if (PinManager.isPinCorrect(getContext(), pin)) {
-                        listener.onPinAuthDialogSucceeded(); // Successo
+                        listener.onPinAuthDialogSucceeded();
                     } else {
                         Toast.makeText(getContext(), R.string.wrong_pin, Toast.LENGTH_SHORT).show();
                     }

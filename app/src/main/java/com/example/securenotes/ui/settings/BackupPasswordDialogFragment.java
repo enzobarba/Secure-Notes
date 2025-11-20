@@ -49,11 +49,7 @@ public class BackupPasswordDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.start, null)
                 .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.cancel());
 
-        //  Creiamo il Dialog
         AlertDialog dialog = builder.create();
-
-
-        // eseguito quando il dialog appare a schermo.
         dialog.setOnShowListener(dialogInterface -> {
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
 
@@ -62,15 +58,10 @@ public class BackupPasswordDialogFragment extends DialogFragment {
                 String password = etPass.getText().toString();
                 String confirm = etConfirm.getText().toString();
 
-                // --- LOGICA DI VALIDAZIONE ---
-
-                // 1. Controlla se sono uguali
                 if (!password.equals(confirm)) {
                     showError(tvError, getString(R.string.passwords_not_equal));
                     return;
                 }
-
-                // 2. Controlla la complessità (solo sul primo campo)
                 if (isValidPassword(password)) {
                     listener.onBackupPasswordSet(password);
                     dialog.dismiss();
@@ -88,16 +79,13 @@ public class BackupPasswordDialogFragment extends DialogFragment {
     }
 
     private boolean isValidPassword(String password) {
-        // 1. Lunghezza minima 12
         if (password.length() < 12) return false;
 
-        // 2. Almeno una Maiuscola
+        // almeno una Maiuscola
         if (!password.matches(".*[A-Z].*")) return false;
-
-        // 3. Almeno un Numero
+        // almeno un Numero
         if (!password.matches(".*[0-9].*")) return false;
-
-        // 4. Almeno un Carattere Speciale
+        // almeno un Carattere Speciale
         if (!password.matches(".*[@#$%^&+=!.].*")) return false;
 
         return true;

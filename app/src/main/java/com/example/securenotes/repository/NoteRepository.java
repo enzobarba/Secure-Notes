@@ -11,9 +11,7 @@ import android.app.Application;
 
 public class NoteRepository {
 
-    // riferimento al DAO
     private final NoteDao noteDao;
-    // LiveData che contiene tutte le note
     private final LiveData<List<Note>> allNotes;
     // thread separato per le operazioni lente (DB)
     private final ExecutorService executorService;

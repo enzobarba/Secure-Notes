@@ -14,13 +14,14 @@ import com.example.securenotes.security.PinManager;
 import com.example.securenotes.ui.dashboard.MainActivity;
 import java.util.concurrent.Executor;
 
-/*
 
+/*
 1. Controlla se esiste un PIN.
-2. Se NO (primo avvio) -> mostra CreatePinFragment.
-3. Se SÌ -> mostra BiometricPrompt.
+2. Se NO (primo avvio) -> mostra CreatePinFragment
+3. Se SÌ -> mostra BiometricPrompt
 4. Se Biometria fallisce/annullata -> mostra EnterPinFragment.
 */
+
 public class AuthActivity extends AppCompatActivity implements
         CreatePinFragment.PinCreationListener,
         EnterPinFragment.PinAuthenticationListener {
@@ -39,13 +40,10 @@ public class AuthActivity extends AppCompatActivity implements
                 WindowManager.LayoutParams.FLAG_SECURE);
 
         setContentView(R.layout.activity_auth);
-
         setupBiometricAuth();
 
         if (savedInstanceState == null) {
-            // Controlla se l'utente ha un PIN
             if (PinManager.isPinSet(this)) {
-                // mostra il pop-up di impronta/volto
                 showBiometricPrompt();
             } else {
                 // forza la creazione del PIN
@@ -105,7 +103,6 @@ public class AuthActivity extends AppCompatActivity implements
                     }
                 });
 
-        // Testo del pop-up
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.access_sec_notes))
                 .setSubtitle(getString(R.string.auth_required))
@@ -113,33 +110,28 @@ public class AuthActivity extends AppCompatActivity implements
                 .build();
     }
 
-    // Mostra il pop-up
     private void showBiometricPrompt() {
-        // 1. Chiedi al sistema se la biometria è pronta
-        //Si permette a dispositivi senza auth biometrica di usare l'app col pin
+        // Chiede al sistema se la biometria è pronta
+        //Si permette a dispositivi senza auth biometrica di usare l'app col solo PIN
         BiometricManager biometricManager = BiometricManager.from(this);
         int canAuthenticate = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
 
         if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
-            // 2a. Se è tutto ok, mostra il prompt
             if (!isFinishing() && !isDestroyed()) {
                 biometricPrompt.authenticate(promptInfo);
             }
         } else {
-            // 2b. Se c'è un QUALSIASI problema (niente hardware, niente impronte, ecc.)
-            // vai SUBITO al PIN. Non lasciare lo schermo bianco.
+            // Se c'è un qualsiasi problema (no HW biometrico) passa al PIN
             showEnterPinFragment();
         }
     }
 
-    // Carica il fragment per creare PIN
     private void showCreatePinFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.auth_fragment_container, new CreatePinFragment())
                 .commit();
     }
 
-    // Carica il fragment per inserire PIN
     private void showEnterPinFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.auth_fragment_container, new EnterPinFragment())

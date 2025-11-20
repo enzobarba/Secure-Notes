@@ -42,7 +42,6 @@ public class FileViewModel extends AndroidViewModel {
                 refreshFileList();
                 _toastMessage.postValue(getApplication().getString(R.string.file_imported));
             } catch (Exception e) {
-                // Logga anche gli errori di importazione
                 _toastMessage.postValue(getApplication().getString(R.string.file_not_imported));
             }
         });

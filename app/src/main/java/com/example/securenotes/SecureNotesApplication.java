@@ -15,11 +15,9 @@ import java.io.File;
 
 public class SecureNotesApplication extends Application implements DefaultLifecycleObserver {
 
-    // Costanti per le impostazioni
     private static final String PREFS_NAME = "app_settings";
     private static final String KEY_TIMEOUT = "timeout_ms";
 
-    // Timeout di default: 3 minuti (usato se non c'è preferenza salvata)
     private static final long DEFAULT_TIMEOUT = 3 * 60 * 1000;
     private static final long CACHE_CLEANUP_MS = 10 * 1000;
 

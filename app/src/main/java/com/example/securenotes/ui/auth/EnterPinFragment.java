@@ -51,10 +51,7 @@ public class EnterPinFragment extends Fragment {
 
         binding.buttonUnlock.setOnClickListener(v -> {
             String pin = binding.editTextPin.getText().toString();
-
-            // Controlla se il PIN è corretto usando PinManager
             if (PinManager.isPinCorrect(requireContext(), pin)) {
-                // PIN CORRETTO: Notifica l'activity
                 listener.onPinAuthenticated();
             } else {
                 Toast.makeText(getContext(), R.string.wrong_pin, Toast.LENGTH_SHORT).show();

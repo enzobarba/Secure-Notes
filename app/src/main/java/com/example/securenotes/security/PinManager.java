@@ -11,7 +11,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /*
-Gestisce il PIN personalizzato dell'app.
 Salva un hash del PIN
 in EncryptedSharedPreferences.
 */
@@ -73,13 +72,13 @@ public class PinManager {
         }
     }
 
-    // Controlla se il PIN inserito è corretto (usato in Login)
+    //usato in Login / verifica pre cambio PIN
     public static boolean isPinCorrect(Context context, String pinToVerify) {
         try {
             SharedPreferences prefs = getEncryptedPrefs(context);
             String savedHash = prefs.getString(KEY_PIN_HASH, null);
             if (savedHash == null) {
-                return false; // Nessun PIN salvato
+                return false;
             }
             String hashToVerify = hashPin(pinToVerify);
             // Confronta gli hash dei PIN
@@ -90,7 +89,7 @@ public class PinManager {
         }
     }
 
-    // Controlla se l'utente ha mai impostato un PIN (usato all'avvio app)
+    // Controlla se l'utente ha mai impostato un PIN (usato all'avvio dell' app)
     public static boolean isPinSet(Context context) {
         try {
             SharedPreferences prefs = getEncryptedPrefs(context);

@@ -18,27 +18,24 @@ import com.example.securenotes.model.Note;
 import com.example.securenotes.viewmodel.NoteViewModel;
 
 /*
-Questo Fragment gestisce l'editor per creare o modificare una nota.
-Implementa il salvataggio automatico e la gestione dei colori.
+Gestisce l'editor per creare o modificare una nota.
+Implementa anche il salvataggio automatico e la gestione dei colori.
 */
 public class NoteDetailFragment extends Fragment {
 
     private FragmentNoteDetailBinding binding;
     private NoteViewModel noteViewModel;
-
     private int currentNoteId = -1;
-
     // Variabili per memorizzare lo stato iniziale (per evitare salvataggi inutili)
     private String originalTitle = "";
     private String originalContent = "";
     private int originalColor;
     private boolean originalIsPinned = false;
-
-    // Variabile per il colore attuale
     private int currentColor;
 
-    // FLAG FONDAMENTALE: Serve a evitare la creazione di note duplicate
-    // quando il ciclo di vita (onStop) scatta più volte.
+    // FLAG che serve a evitare la creazione di note duplicate
+    // quando il ciclo di vita (onStop) scatta più volte (fix bug apertura impostazioni tastiera
+    //durante scrittura nota che portava a un doppio salvataggio)
     private boolean isNewNote = false;
 
     @Nullable
@@ -50,11 +47,9 @@ public class NoteDetailFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
-
         noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
-
-        // Imposta il colore di default
         int defaultColor = ContextCompat.getColor(requireContext(), R.color.note_white);
         originalColor = defaultColor;
         currentColor = defaultColor;
@@ -65,33 +60,27 @@ public class NoteDetailFragment extends Fragment {
         }
 
         if (currentNoteId == -1) {
-            // CASO 1: NOTA NUOVA
-            // Impostiamo il flag a true.
             isNewNote = true;
         } else {
-            // CASO 2: NOTA ESISTENTE
             isNewNote = false;
 
-            // Carichiamo i dati dal Bundle
-            // (Nota: assert args != null non serve se abbiamo controllato if (currentNoteId != -1))
+            // Carica i dati dal Bundle
             String title = args.getString("NOTE_TITLE_KEY");
             String content = args.getString("NOTE_CONTENT_KEY");
             originalColor = args.getInt("NOTE_COLOR_KEY", defaultColor);
             originalIsPinned = args.getBoolean("NOTE_PINNED_KEY");
 
-            // Aggiorniamo le variabili "originali"
+            // Aggiorna le variabili originali
             originalTitle = title;
             originalContent = content;
             currentColor = originalColor;
 
-            // Popoliamo la UI
+            // Popola la UI
             binding.editTextTitle.setText(title);
             binding.editTextContent.setText(content);
         }
 
-        // Applichiamo il colore (sfondo e testo)
         updateBackgroundColor(currentColor);
-
         setupColorPaletteListeners();
     }
 
@@ -99,9 +88,8 @@ public class NoteDetailFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        // Rimosso il controllo 'if (isNewNote && ...)' che avevi messo.
-        // Vogliamo salvare SEMPRE quando l'app va in stop (anche tasto Home).
-        // Il metodo saveNote() gestirà i duplicati internamente.
+        // Si salva SEMPRE quando l'app va in stop
+        // Il metodo saveNote() gestirà i duplicati internamente
         saveNote();
     }
 
@@ -109,15 +97,14 @@ public class NoteDetailFragment extends Fragment {
         String currentTitle = binding.editTextTitle.getText().toString().trim();
         String currentContent = binding.editTextContent.getText().toString().trim();
 
-        // 1. CONTROLLO DI GUARDIA
-        // Se nulla è cambiato rispetto all'originale (o all'ultimo salvataggio), esci.
+        // Se nulla è cambiato rispetto all'originale (o all'ultimo salvataggio), esce
         if (currentTitle.equals(originalTitle) &&
                 currentContent.equals(originalContent) &&
                 currentColor == originalColor) {
             return;
         }
 
-        // 2. CANCELLAZIONE (Se vuota)
+        // cancellazione (Se vuota)
         if (currentTitle.isEmpty() && currentContent.isEmpty()) {
             if (currentNoteId != -1) {
                 Note noteToDelete = new Note("", "", 0, 0, false);
@@ -127,35 +114,26 @@ public class NoteDetailFragment extends Fragment {
             return;
         }
 
-        // 3. CREAZIONE OGGETTO
+        // Creazione oggetto
         long timestamp = System.currentTimeMillis();
-        // Usiamo originalIsPinned per non perdere lo stato del pin
+        // Si usa originalIsPinned per non perdere lo stato del pin
         Note note = new Note(currentTitle, currentContent, timestamp, currentColor, originalIsPinned);
 
-        // 4. SALVATAGGIO (Insert o Update)
+        //Salvataggio (Insert o Update)
         if (isNewNote) {
-            // È una nota nuova: INSERISCI
             noteViewModel.insert(note);
-
-            // IMPORTANTE: Ora la nota esiste. Impostiamo il flag a false.
             // Se onStop viene chiamato di nuovo, non la inserirà un'altra volta.
             isNewNote = false;
 
         } else if (currentNoteId != -1) {
-            // È una nota esistente: AGGIORNA
+            // È una nota esistente: aggiorna
             note.id = currentNoteId;
             noteViewModel.update(note);
         }
-
-        // 5. AGGIORNAMENTO STATO
-        // Aggiorniamo le variabili "original" al valore attuale.
-        // Così se saveNote() viene richiamato subito dopo, il controllo n.1 ci bloccherà.
         originalTitle = currentTitle;
         originalContent = currentContent;
         originalColor = currentColor;
     }
-
-    // --- GESTIONE COLORI ---
 
     private void setupColorPaletteListeners() {
         binding.colorWhite.setOnClickListener(v -> setCurrentColor(R.color.note_white));
@@ -171,27 +149,24 @@ public class NoteDetailFragment extends Fragment {
         updateBackgroundColor(currentColor);
     }
 
-    // Metodo avanzato per gestire sfondo E colore del testo
+    // Gestisce sfondo e colore del testo
     private void updateBackgroundColor(int color) {
         binding.getRoot().setBackgroundColor(color);
-
-        // Controlla se il colore è scuro
         if (isColorDark(color)) {
-            // Sfondo scuro -> Testo Bianco
+            // Sfondo scuro -> testo bianco
             binding.editTextTitle.setTextColor(Color.WHITE);
             binding.editTextContent.setTextColor(Color.WHITE);
             binding.editTextTitle.setHintTextColor(Color.LTGRAY);
             binding.editTextContent.setHintTextColor(Color.LTGRAY);
         } else {
-            // Sfondo chiaro -> Testo Nero
+            // Sfondo chiaro -> testo nero
             binding.editTextTitle.setTextColor(Color.BLACK);
-            binding.editTextContent.setTextColor(Color.BLACK); // o DKGRAY
+            binding.editTextContent.setTextColor(Color.BLACK);
             binding.editTextTitle.setHintTextColor(Color.GRAY);
             binding.editTextContent.setHintTextColor(Color.GRAY);
         }
     }
 
-    // Helper per la luminosità
     private boolean isColorDark(int color) {
         return ColorUtils.calculateLuminance(color) < 0.5;
     }

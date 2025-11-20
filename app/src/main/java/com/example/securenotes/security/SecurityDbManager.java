@@ -11,7 +11,7 @@ import java.security.SecureRandom;
 import android.util.Base64;
 
 /*
-Questa classe gestisce la chiave di crittografia del database.
+Gestisce la chiave di crittografia del database.
 Usa EncryptedSharedPreferences (Jetpack Security) per
 salvare una passphrase generata casualmente,
 protetta dall'Android Keystore.
@@ -46,7 +46,7 @@ public class SecurityDbManager {
         String base64Passphrase = sharedPreferences.getString(KEY_DB_PASSPHRASE, null);
 
         if (base64Passphrase == null) {
-            // Non trovata (primo avvio): Genera una nuova passphrase
+            // Non trovata (al primo avvio): Genera una nuova passphrase
             byte[] newPassphrase = new byte[32]; // 256 bit
             new SecureRandom().nextBytes(newPassphrase);
 

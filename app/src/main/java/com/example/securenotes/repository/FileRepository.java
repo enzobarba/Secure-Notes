@@ -18,8 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /*
-Questo Repository gestisce l'I/O e la Cripto dei File.
-Contiene le correzioni per il bug di copia/flush.
+gestisce l'I/O e la cifratura dei File.
 */
 public class FileRepository {
 
@@ -47,7 +46,7 @@ public class FileRepository {
         return null;
     }
 
-    // Cripta e salva un nuovo file (Loop di copia corretto)
+    // Cripta e salva un nuovo file
     public File encryptFile(Context context, Uri fileUri)
             throws GeneralSecurityException, IOException {
 
@@ -82,7 +81,7 @@ public class FileRepository {
         return outputFile;
     }
 
-    // Decripta un file in una copia temporanea (Loop e flush corretti)
+    // Decripta un file in una copia temporanea
     public File decryptFile(Context context, File encryptedFile)
             throws GeneralSecurityException, IOException {
 
@@ -109,7 +108,7 @@ public class FileRepository {
             outputStream.write(buffer, 0, bytesRead);
         }
 
-        // CORREZIONE DEL BUG: Svuota il buffer prima di chiudere
+        //Svuota il buffer prima di chiudere
         outputStream.flush();
         outputStream.close();
         inputStream.close();
@@ -121,7 +120,6 @@ public class FileRepository {
         if (!fileToDelete.exists() || !fileToDelete.isFile()) {
             return false;
         }
-        // 'file.delete()' restituisce 'true' se ha successo
         return fileToDelete.delete();
     }
 

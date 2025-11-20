@@ -10,31 +10,25 @@ import com.example.securenotes.ui.note.NoteListFragment;
 import com.example.securenotes.ui.archive.FileArchiveFragment;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.example.securenotes.ui.auth.CreatePinFragment;
 import com.example.securenotes.ui.settings.SettingsFragment;
 
 /*
 gestisce la BottomNavigationView
-e implementa il 'listener' di NoteListFragment per
+e implementa il listener di NoteListFragment per
 navigare ai dettagli.
 */
 public class MainActivity extends AppCompatActivity implements NoteListFragment.NoteNavigationListener, CreatePinFragment.PinCreationListener{
 
     private ActivityMainBinding binding;
-
-    // Istanzia i fragment "radice" per riutilizzarli
     private final NoteListFragment noteListFragment = new NoteListFragment();
-
     private final FileArchiveFragment fileArchiveFragment = new FileArchiveFragment();
-
     private final SettingsFragment settingsFragment = new SettingsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Impedisce screenshot e oscura l'anteprima nelle App Recenti
+        // Impedisce screenshot e oscura l'anteprima nelle app lasciate in background
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
 
@@ -52,18 +46,17 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
 
-            // Controlla quale pulsante è stato premuto
             if (itemId == R.id.menu_notes) {
                 selectedFragment = noteListFragment;
-            } else if (itemId == R.id.menu_files) {
-                selectedFragment = fileArchiveFragment; // ERRORE
             }
-            else if (itemId == R.id.menu_settings) { // <-- ADDED CASE
+            else if (itemId == R.id.menu_files) {
+                selectedFragment = fileArchiveFragment;
+            }
+            else if (itemId == R.id.menu_settings) {
                 selectedFragment = settingsFragment;
             }
-
             if (selectedFragment != null) {
-                loadFragment(selectedFragment); // Carica il fragment scelto
+                loadFragment(selectedFragment);
                 return true;
             }
             return false;
@@ -94,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
         getSupportFragmentManager().beginTransaction()
                 // Usa il contenitore 'main_fragment_container'
                 .replace(R.id.main_fragment_container, detailFragment)
-                // Aggiungi alla "cronologia" per il tasto "Indietro"
+                // Aggiunge alla cronologia per il tasto 'Indietro'
                 .addToBackStack(null)
                 .commit();
     }
@@ -102,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
     @Override
     public void onPinCreated() {
         Toast.makeText(this, R.string.pin_changed, Toast.LENGTH_SHORT).show();
-        // Torna indietro (al SettingsFragment)
+        // Torna indietro al SettingsFragment
         getSupportFragmentManager().popBackStack();
     }
 }

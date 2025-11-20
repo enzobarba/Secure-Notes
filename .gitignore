@@ -2,6 +2,11 @@
 .gradle/
 build/
 
+/app/release
+*.apk
+*.aab
+*.dm
+
 # Local configuration file (sdk path, etc)
 local.properties
 

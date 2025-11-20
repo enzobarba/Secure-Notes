@@ -27,29 +27,24 @@ import java.io.File;
 import java.util.concurrent.Executor;
 
 /*
-Questo Fragment (Refactoring Fatto).
 Delega tutto il lavoro pesante (I/O, Cripto)
 al FileViewModel.
 */
+
 public class FileArchiveFragment extends Fragment implements EnterPinDialogFragment.PinAuthDialogListener{
 
     private FragmentFileArchiveBinding binding;
     private FileAdapter fileAdapter;
-    private FileViewModel fileViewModel; // Il nostro "ponte"
-
-    // Oggetti per l'autenticazione secondaria (UI 4)
+    private FileViewModel fileViewModel;
     private Executor biometricExecutor;
     private BiometricPrompt biometricPrompt;
-
     private File fileToOpen;
-
     // Launcher per il selettore di file
     private ActivityResultLauncher<Intent> filePickerLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Registra il "callback" per il selettore di file
         filePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -57,13 +52,11 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Uri fileUri = result.getData().getData();
                         if (fileUri != null) {
-                            // Chiedi al ViewModel di importare
                             fileViewModel.importFile(fileUri);
                         }
                     }
                 }
         );
-
         // Prepara il gestore biometrico
         setupBiometricPrompt();
     }
@@ -79,19 +72,18 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Imposta l'Adapter
+        // Imposta l'Adapter
         fileAdapter = new FileAdapter();
         binding.recyclerViewFiles.setAdapter(fileAdapter);
 
-        // 2. Collega il FileViewModel
+        // Collega il FileViewModel
         fileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
 
-        // 3. Imposta il click sul FAB
+        // Imposta il click sul FAB
         binding.fabAddFile.setOnClickListener(v -> launchFilePicker());
 
-        // 4. Click sul file -> lancia l'autenticazione
+        // click sul file -> lancia l'autenticazione
         fileAdapter.setOnItemClickListener(file -> {
-            // Requisito UI 4: Chiedi l'auth *prima* di aprire
             authenticateAndOpenFile(file);
         });
 
@@ -99,10 +91,10 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
             showFileContextMenu(file, anchorView);
         });
 
-        // 5. Osserva i LiveData del ViewModel
+        // Osserva i LiveData del ViewModel
         observeViewModel();
 
-        // 6. Carica la lista iniziale
+        // Carica la lista iniziale
         fileViewModel.refreshFileList();
     }
 
@@ -116,7 +108,7 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
             }
         });
 
-        // Osserva i messaggi (es. "File importato!")
+        // Osserva i messaggi (es. "File importato con successo")
         fileViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
@@ -148,18 +140,14 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
 
     private void authenticateAndOpenFile(File encryptedFile) {
 
-        // 1. Salva il file che l'utente vuole aprire
-        //    nella nostra variabile di classe.
         this.fileToOpen = encryptedFile;
 
-        // 2. Prepara il "callback" (cosa fare DOPO l'autenticazione)
+        // Prepara il "callback" (cosa fare DOPO l'autenticazione)
         BiometricPrompt.AuthenticationCallback callback =
                 new BiometricPrompt.AuthenticationCallback() {
 
                     @Override
                     public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                        // Chiamiamo il ViewModel (passando il file
-                        // che abbiamo salvato).
                         fileViewModel.decryptAndPrepareFile(fileToOpen);
                     }
 
@@ -168,14 +156,12 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
                         // Se l'utente preme "Annulla" o "Usa PIN"...
                         if (errorCode == BiometricPrompt.ERROR_USER_CANCELED
                                 || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-
-                            // ...mostra il NOSTRO pop-up del PIN.
                             showPinDialog();
                         }
                     }
                 };
 
-        // 3. Crea e mostra il prompt
+        // Crea e mostra il prompt
         biometricPrompt = new BiometricPrompt(this, biometricExecutor, callback);
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
@@ -185,17 +171,16 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
                 .build();
 
         if (canUseBiometrics()) {
-            // Se sì, mostra il prompt
+            // mostra il prompt
             biometricPrompt.authenticate(promptInfo);
         } else {
-            // Se no (es. emulatore senza impronte),
+            // in caso di emulatore senza impronte
             showPinDialog();
         }
     }
 
 
-    //Questo metodo helper crea e mostra il nostro nuovo DialogFragment.
-
+    //Crea e mostra il nuovo DialogFragment.
     private void showPinDialog() {
         EnterPinDialogFragment dialog = new EnterPinDialogFragment();
 
@@ -210,19 +195,15 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
     */
     @Override
     public void onPinAuthDialogSucceeded() {
-        // SUCCESSO! L'utente ha inserito il PIN.
-
-        // Controlliamo se abbiamo un file "in attesa"
+        // Controlla se c'è un file in attesa
         if (fileToOpen != null) {
-            // Diciamo al ViewModel di decriptare
             fileViewModel.decryptAndPrepareFile(fileToOpen);
-
-            // Resettiamo il file in attesa per sicurezza
+            // Reset file in attesa per sicurezza
             fileToOpen = null;
         }
     }
 
-    // 2. Lancia l'Intent per aprire il file (chiamato dal LiveData)
+    // Lancia l'Intent per aprire il file (chiamato dal LiveData)
     private void openFileWithIntent(Uri fileUri) {
         try {
             Intent openIntent = new Intent(Intent.ACTION_VIEW);
@@ -235,47 +216,33 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
         }
     }
 
-    /*
-    Questo metodo crea e mostra il nostro menu
-    per i file.
-    */
+
+    //menù per i file
     private void showFileContextMenu(File file, View anchorView) {
-        // 1. Crea un PopupMenu
         PopupMenu popup = new PopupMenu(requireContext(), anchorView);
-
-        // 2. "Gonfia" (crea) il menu usando il nostro NUOVO
-        //    file 'file_context_menu.xml' (che ha solo "Delete").
         popup.getMenuInflater().inflate(R.menu.file_context_menu, popup.getMenu());
-
-        // 3. Imposta il listener per i click
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
-
             if (itemId == R.id.menu_delete) {
-                // Utente ha cliccato "Elimina"
-                confirmDeleteFile(file); // Chiedi conferma
+                confirmDeleteFile(file);
                 return true;
             }
             return false;
         });
-
-        // 4. Mostra il menu
         popup.show();
     }
 
 
-    //Mostra un pop-up di conferma "Sei sicuro?"
+    //Mostra un pop-up di conferma cancellazione
     private void confirmDeleteFile(File file) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.menu_delete) // "Delete"
                 .setMessage(getString(R.string.delete_file) + "\n" + file.getName())
                 .setPositiveButton(R.string.menu_delete, (dialog, which) -> {
-                    // Se l'utente clicca "Elimina",
-                    // chiama il nostro nuovo metodo del ViewModel.
                     fileViewModel.deleteFile(file);
                 })
                 .setNegativeButton( R.string.cancel, null) // "Annulla"
-                .show(); // Mostra il pop-up
+                .show();
     }
 
     private boolean canUseBiometrics() {
@@ -284,7 +251,7 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
                 == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
-    // Pulisci il binding
+    // Pulisce il binding
     @Override
     public void onDestroyView() {
         super.onDestroyView();

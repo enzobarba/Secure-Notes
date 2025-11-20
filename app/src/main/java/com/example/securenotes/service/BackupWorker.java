@@ -56,12 +56,12 @@ public class BackupWorker extends Worker {
         Uri backupUri = null;
 
         try {
-            // 1. Prepara il nome del file
+            // Prepara il nome del file
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
             String fileName = "SecureNotes_Backup_" + timeStamp + ".enc";
 
-            // 2. Crea l'OutputStream usando MediaStore (Funziona su Android 10+)
-            //    Questo metodo non richiede permessi di scrittura esterni.
+            // Crea l'OutputStream usando MediaStore (funziona su Android 10+)
+            // richiede permessi di scrittura esterni. Senza di esso errore durante backup.
             OutputStream fos;
 
             ContentValues values = new ContentValues();
@@ -69,7 +69,7 @@ public class BackupWorker extends Worker {
             values.put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream"); // Tipo binario
             values.put(MediaStore.Downloads.RELATIVE_PATH, "Download/SecureNotes"); // Crea una sottocartella
 
-            // Inserisci il record nel sistema e ottieni un URI
+            // Inserisce il record nel sistema e ottiene un URI
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 backupUri = getApplicationContext().getContentResolver()
                         .insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
@@ -79,30 +79,30 @@ public class BackupWorker extends Worker {
                 throw new Exception("Impossible to create file in MediaStore");
             }
 
-            // Apri il flusso di scrittura verso quell'URI
+            // Apre il flusso di scrittura verso quell'URI
             fos = getApplicationContext().getContentResolver().openOutputStream(backupUri);
 
             if (fos == null) {
                 throw new Exception("Impossible to open OutputStream");
             }
 
-            // 3. Genera Salt e IV
+            // Genera Salt e IV
             byte[] salt = new byte[SALT_LENGTH];
             byte[] iv = new byte[IV_LENGTH];
             SecureRandom random = new SecureRandom();
             random.nextBytes(salt);
             random.nextBytes(iv);
 
-            // 4. Cripta
+            // Cripta
             SecretKey secretKey = deriveKey(password, salt);
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
 
-            // 5. Scrivi Salt e IV all'inizio
+            // Scrive Salt e IV all'inizio
             fos.write(salt);
             fos.write(iv);
 
-            // 6. Zip e Scrivi
+            // 6. Zip e Scrive
             ZipOutputStream zos = new ZipOutputStream(new CipherOutputStream(fos, cipher));
             backupNotes(zos);
             backupFiles(zos);

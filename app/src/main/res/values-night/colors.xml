@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <color name="note_white">#FF373737</color>
-
     <color name="note_yellow">#FF6F6636</color>
-
     <color name="note_green">#FF3A603C</color>
-
     <color name="note_blue">#FF2E5B7B</color>
-
     <color name="note_red">#FF7A3E3E</color>
-
 </resources>

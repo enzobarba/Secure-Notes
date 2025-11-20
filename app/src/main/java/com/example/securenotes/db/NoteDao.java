@@ -22,7 +22,7 @@ public interface NoteDao {
 
     /*
     Non restituisce LiveData (asincrono), ma una List diretta (sincrona).
-    Possiamo usarlo perché il BackupWorker è già in un thread background.
+    Si può usare perché il BackupWorker è già in un thread background.
     */
     @Query("SELECT * FROM notes")
     List<Note> getAllNotesDirect();

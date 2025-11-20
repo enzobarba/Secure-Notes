@@ -14,10 +14,6 @@ import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentCreatePinBinding;
 import com.example.securenotes.security.PinManager;
 
-/*
-Fragment per forzare l'utente a creare un PIN
-al primo avvio.
-*/
 public class CreatePinFragment extends Fragment {
 
     // Interfaccia callback per notificare AuthActivity
@@ -54,7 +50,6 @@ public class CreatePinFragment extends Fragment {
             String pin1 = binding.editTextPin.getText().toString();
             String pin2 = binding.editTextPinConfirm.getText().toString();
 
-            // Logica di validazione e salvataggio
             if (pin1.length() < 4) {
                 Toast.makeText(getContext(), R.string.settings_pin, Toast.LENGTH_SHORT).show();
             } else if (!pin1.equals(pin2)) {

@@ -2,7 +2,7 @@
 
 <full-backup-content>
 
-    //non ha senso fare backup automatico in drive se non si può passare MasterKey
+    //non ha senso fare (eventuale) backup automatico in drive se non si può passare MasterKey
     <exclude domain="sharedpref" path="secure_notes_prefs.xml"/>
     <exclude domain="sharedpref" path="secure_notes_pin_prefs.xml"/>
     <exclude domain="database" path="secure_notes_db"/>

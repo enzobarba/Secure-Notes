@@ -40,7 +40,6 @@ public class FileAdapter extends ListAdapter<File, FileAdapter.FileViewHolder> {
     @NonNull
     @Override
     public FileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // "Gonfia" il layout 'item_file.xml'
         ItemFileBinding binding = ItemFileBinding.inflate(
                 LayoutInflater.from(parent.getContext()),
                 parent,
@@ -54,7 +53,7 @@ public class FileAdapter extends ListAdapter<File, FileAdapter.FileViewHolder> {
         holder.bind(getItem(position));
     }
 
-    // ViewHolder: tiene in memoria le View di 'item_file.xml'
+    // tiene in memoria le View di 'item_file.xml'
     class FileViewHolder extends RecyclerView.ViewHolder {
 
         private final ItemFileBinding binding;
@@ -74,11 +73,11 @@ public class FileAdapter extends ListAdapter<File, FileAdapter.FileViewHolder> {
                 int position = getAdapterPosition();
                 if (longClickListener != null && position != RecyclerView.NO_POSITION) {
                     // Chiama il nuovo listener
-                    // Passa il file E la vista (v)
+                    // Passa il file e la vista (v)
                     longClickListener.onItemLongClick(getItem(position), v);
-                    return true; // 'true' = abbiamo gestito l'evento
+                    return true;
                 }
-                return false; // 'false' = non gestito
+                return false; // evento non gestito
             });
         }
 
@@ -88,7 +87,7 @@ public class FileAdapter extends ListAdapter<File, FileAdapter.FileViewHolder> {
         }
     }
 
-    // DIFF_CALLBACK: Confronta i file in base al loro percorso
+    // Confronta i file in base al loro percorso
     private static final DiffUtil.ItemCallback<File> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<File>() {
 

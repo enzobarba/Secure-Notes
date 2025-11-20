@@ -14,9 +14,9 @@ import com.example.securenotes.model.Note;
 import com.example.securenotes.databinding.ItemNoteBinding;
 
 // ListAdapter gestisce la lista e le animazioni automaticamente
-public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
+public class NoteAdapter extends ListAdapter <Note, NoteAdapter.NoteViewHolder> {
 
-    // Interfaccia "callback" per notificare il Fragment di un click
+    // Interfaccia callback per notificare il Fragment di un click
     public interface OnItemClickListener {
         void onItemClick(Note note);
     }
@@ -24,8 +24,8 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
 
     /*
     interfaccia callback che
-    passa sia la Nota che la Vista (la CardView),
-    che ci serve per ancorare il PopupMenu.
+    passa sia la Nota che la Vista (CardView),
+    che serve per ancorare il PopupMenu
     */
     public interface OnItemLongClickListener {
         void onItemLongClick(Note note, View view);
@@ -41,13 +41,13 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
     }
 
     public NoteAdapter() {
-        super(DIFF_CALLBACK); // Passa il gestore delle differenze
+        super(DIFF_CALLBACK);
     }
 
     @NonNull
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // "Gonfia" (crea) il layout XML 'item_note.xml' usando ViewBinding
+        // crea il layout XML 'item_note.xml' usando ViewBinding
         ItemNoteBinding binding = ItemNoteBinding.inflate(
                 LayoutInflater.from(parent.getContext()),
                 parent,
@@ -82,7 +82,7 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
             itemView.setOnLongClickListener(v -> {
                 int position = getAdapterPosition();
                 if (longClickListener != null && position != RecyclerView.NO_POSITION) {
-                    // Passa la nota e la vista (v)
+                    // Passa la nota e la vista 'v'
                     longClickListener.onItemLongClick(getItem(position), v);
                     return true; //
                 }
@@ -103,14 +103,13 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
         }
     }
 
-    // DIFF_CALLBACK: Dice a ListAdapter come calcolare le differenze
+    // Dice a ListAdapter come calcolare le differenze
     // in modo efficiente, senza ridisegnare l'intera lista.
     private static final DiffUtil.ItemCallback<Note> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<Note>() {
 
                 @Override
                 public boolean areItemsTheSame(@NonNull Note oldItem, @NonNull Note newItem) {
-                    // Controlla se è lo stesso oggetto (tramite ID univoco)
                     return oldItem.id == newItem.id;
                 }
 
@@ -126,9 +125,7 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder> {
             };
 
     private String formatTimestamp(long millis) {
-        // 'DateFormat.getDateTimeInstance()' usa il formato
-        // data e ora predefinito per la lingua e la regione
-        // del telefono dell'utente (es. "11/11/25, 15:30" o "11-11-2025 3:30 PM")
+        // formato data e ora predefinito per la lingua e la regione del telefono dell'utente
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         return df.format(new Date(millis));
     }

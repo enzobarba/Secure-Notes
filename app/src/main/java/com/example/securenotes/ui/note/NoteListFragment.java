@@ -12,23 +12,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.example.securenotes.R;
 import com.example.securenotes.databinding.FragmentNoteListBinding;
 import com.example.securenotes.model.Note;
 import com.example.securenotes.viewmodel.NoteViewModel;
 
-/*
-Questo Fragment mostra la lista di note (la Dashboard)
-e gestisce i menu contestuali (pressione lunga).
-*/
+
 public class NoteListFragment extends Fragment {
 
     private FragmentNoteListBinding binding;
     private NoteViewModel noteViewModel;
     private NoteAdapter noteAdapter;
 
-    // Interfaccia "callback" per dire a MainActivity di navigare
+    // Interfaccia callback per dire a MainActivity di navigare
     public interface NoteNavigationListener {
         void navigateToDetail(int noteId, String title, String content, int color, boolean isPinned);
     }
@@ -47,7 +43,6 @@ public class NoteListFragment extends Fragment {
         }
     }
 
-    // "Gonfia" il layout XML
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -60,19 +55,17 @@ public class NoteListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Imposta Adapter e RecyclerView
+        // imposta Adapter e RecyclerView
         noteAdapter = new NoteAdapter();
         binding.recyclerViewNotes.setAdapter(noteAdapter);
 
-        // 2. Collega il ViewModel (che hai già)
+        // collega il ViewModel
         noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
-        // 3. Osserva i dati LiveData dal ViewModel
+        // osserva i dati LiveData dal ViewModel
         noteViewModel.getAllNotes().observe(getViewLifecycleOwner(), notes -> {
             noteAdapter.submitList(notes);
         });
-
-        // 4. Imposta i Click Listener
 
         // Pulsante "+" (chiama MainActivity)
         binding.fabAddNote.setOnClickListener(v -> {
@@ -87,18 +80,14 @@ public class NoteListFragment extends Fragment {
             );
         });
 
-        // Click lungo (gestito qui)
         noteAdapter.setOnItemLongClickListener((note, anchorView) -> {
             showContextMenu(note, anchorView);
         });
     }
 
-    // Mostra il menu a tendina (Popup)
     private void showContextMenu(Note note, View anchorView) {
         PopupMenu popup = new PopupMenu(requireContext(), anchorView);
         popup.getMenuInflater().inflate(R.menu.note_context_menu, popup.getMenu());
-
-        // Logica per cambiare il testo "Pin" / "Unpin"
         MenuItem pinItem = popup.getMenu().findItem(R.id.menu_pin);
         if (note.isPinned) {
             pinItem.setTitle(R.string.menu_unpin);
@@ -113,7 +102,7 @@ public class NoteListFragment extends Fragment {
                 togglePinState(note);
                 return true;
             } else if (itemId == R.id.menu_delete) {
-                confirmDeleteNote(note); // Metodo helper
+                confirmDeleteNote(note);
                 return true;
             }
             return false;
@@ -121,22 +110,20 @@ public class NoteListFragment extends Fragment {
         popup.show();
     }
 
-    // Logica per "pinnare" (non aggiorna il timestamp)
+    // Logica per pinnare che non aggiorna il timestamp
     private void togglePinState(Note note) {
-        // Crea una nota aggiornata con lo stato 'isPinned' invertito
         Note updatedNote = new Note(
                 note.title,
                 note.content,
-                note.timestamp, // Preserva il timestamp originale
+                note.timestamp,
                 note.color,
-                !note.isPinned // Inverti il booleano
+                !note.isPinned
         );
         updatedNote.id = note.id;
 
         noteViewModel.update(updatedNote);
     }
 
-    // Pop-up di conferma eliminazione
     private void confirmDeleteNote(Note note) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.menu_delete)

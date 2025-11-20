@@ -26,10 +26,7 @@ import com.example.securenotes.databinding.FragmentSettingsBinding;
 import com.example.securenotes.ui.auth.CreatePinFragment;
 import com.example.securenotes.ui.auth.EnterPinDialogFragment;
 
-/*
-Fragment delle Impostazioni.
-Gestisce Timeout e Cambio PIN.
-*/
+
 public class SettingsFragment extends Fragment implements
         EnterPinDialogFragment.PinAuthDialogListener,
         BackupPasswordDialogFragment.BackupPasswordListener{ // <-- Implementa l'interfaccia del Dialog
@@ -56,17 +53,14 @@ public class SettingsFragment extends Fragment implements
 
         prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        // 1. Inizializziamo i ViewModel per controllare i dati
+        // Per controllare i dati
         noteViewModel = new ViewModelProvider(requireActivity()).get(NoteViewModel.class);
         fileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
 
-        // IMPORTANTE: "Sveglia" i LiveData!
-        // Aggiungiamo degli osservatori vuoti. Questo costringe Room
-        // e il Repository a caricare i dati in memoria, così
-        // quando chiameremo .getValue() nel click listener, non sarà null.
+        // Sveglia i LiveData (fix bug di solo note non backupate -> dava errore 'no data to backup')
         noteViewModel.getAllNotes().observe(getViewLifecycleOwner(), notes -> {});
         fileViewModel.fileList.observe(getViewLifecycleOwner(), files -> {});
-        // Forziamo il caricamento dei file per essere sicuri di avere il numero aggiornato
+        // Forza il caricamento dei file per essere sicuri di avere il numero aggiornato
         fileViewModel.refreshFileList();
 
         // --- LOGICA TIMEOUT ---
@@ -86,13 +80,10 @@ public class SettingsFragment extends Fragment implements
 
         });
 
-        // --- LOGICA CAMBIO PIN ---
         binding.btnChangePin.setOnClickListener(v -> {
-            // Qui chiamiamo il metodo che mancava!
             showVerifyPinDialog();
         });
 
-        // --- LOGICA BACKUP (Per domani) ---
         binding.btnExportBackup.setOnClickListener(v -> {
             boolean hasNotes = false;
             boolean hasFiles = false;
@@ -112,33 +103,25 @@ public class SettingsFragment extends Fragment implements
         });
     }
 
-
-    //Mostra il pop-up con titolo personalizzato
+    //Mostra pop-up con titolo personalizzato
     private void showVerifyPinDialog() {
         EnterPinDialogFragment dialog = new EnterPinDialogFragment();
-
-        // Passiamo il titolo "Insert OLD PIN"
+        // Passa il titolo "Insert old PIN"
         Bundle args = new Bundle();
         args.putString(EnterPinDialogFragment.ARG_TITLE, getString(R.string.insert_old_pin));
         dialog.setArguments(args);
-
         dialog.setTargetFragment(this, 0);
         dialog.show(getParentFragmentManager(), "VerifyPinDialog");
     }
 
-    /*
-    CALLBACK: Chiamato quando il vecchio PIN è corretto.
-    */
+    //Callback chiamata quando il vecchio PIN è corretto.
     @Override
     public void onPinAuthDialogSucceeded() {
-        // Il vecchio PIN è giusto. Lanciamo la schermata per crearne uno NUOVO.
         CreatePinFragment createFragment = new CreatePinFragment();
-
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, createFragment)
                 .addToBackStack(null)
                 .commit();
-
         Toast.makeText(getContext(), R.string.create_pin, Toast.LENGTH_SHORT).show();
     }
 
@@ -149,25 +132,25 @@ public class SettingsFragment extends Fragment implements
     }
 
 
-    //Viene chiamato quando l'utente ha scelto la password e premuto "Avvia". Si lancia il workManager
+    //lancia il workManager
     @Override
     public void onBackupPasswordSet(String password) {
         Toast.makeText(getContext(), R.string.backup_running, Toast.LENGTH_SHORT).show();
 
-        // 1. Prepara i dati da inviare al Worker (la password)
+        // prepara i dati da inviare al Worker (la password)
         Data inputData = new Data.Builder()
                 .putString(BackupWorker.KEY_PASSWORD, password)
                 .build();
 
-        // 2. Crea la richiesta di lavoro (OneTime = una volta sola)
+        // crea la richiesta
         OneTimeWorkRequest backupRequest = new OneTimeWorkRequest.Builder(BackupWorker.class)
-                .setInputData(inputData) // Allega la password
+                .setInputData(inputData) // password
                 .build();
 
-        // 3. Metti in coda il lavoro
+        // mette in coda
         WorkManager.getInstance(requireContext()).enqueue(backupRequest);
 
-        // 4. (Opzionale) Osserva lo stato per sapere quando finisce
+        // osserva lo stato per sapere quando finisce
         WorkManager.getInstance(requireContext()).getWorkInfoByIdLiveData(backupRequest.getId())
                 .observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {

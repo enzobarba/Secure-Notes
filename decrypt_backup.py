@@ -8,7 +8,7 @@ def decrypt_backup(encrypted_file_path, password, output_zip_path):
     with open(encrypted_file_path, 'rb') as f:
         data = f.read()
 
-    # 2. Extract Salt and IV 
+    # Extract Salt and IV
     # Java: fos.write(salt); (16 byte)
     salt = data[:16]
     # Java: fos.write(iv); (12 byte)
@@ -19,7 +19,7 @@ def decrypt_backup(encrypted_file_path, password, output_zip_path):
     print(f"Extracted Salt: {salt.hex()}")
     print(f"Extracted IV: {nonce_iv.hex()}")
 
-    # 3. Extract key from passwd (PBKDF2)
+    # Extract key from passwd (PBKDF2)
     # 10000 iterations, SHA256
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -29,13 +29,13 @@ def decrypt_backup(encrypted_file_path, password, output_zip_path):
     )
     key = kdf.derive(password.encode('utf-8'))
 
-    # 4. Decrypt using AES-GCM
+    # Decrypt using AES-GCM
     aesgcm = AESGCM(key)
     try:
         
         decrypted_data = aesgcm.decrypt(nonce_iv, ciphertext, None)
         
-        # 5. Save result (clear Zip)
+        # Save result (clear Zip)
         with open(output_zip_path, 'wb') as f:
             f.write(decrypted_data)
         
@@ -46,8 +46,14 @@ def decrypt_backup(encrypted_file_path, password, output_zip_path):
         print("ERROR: wrong password or corrupted file.")
         print(e)
 
-# change input_file with file name of encrypted backup
-input_file = "SecureNotes_Backup_20251118_113945.enc" 
+# ----------------------------
+# CHANGE
+# CHANGE input_file with file name of encrypted backup
+# CHANGE
+# CHANGE
+# ----------------------------
+input_file = "SecureNotes_Backup_20251118_113945.enc"
+
 output_file = "unlocked_backup.zip"
 user_pass = input("Insert password for backup: ")
 

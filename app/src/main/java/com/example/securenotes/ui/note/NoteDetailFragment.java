@@ -93,6 +93,12 @@ public class NoteDetailFragment extends Fragment {
         saveNote();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void saveNote() {
         String currentTitle = binding.editTextTitle.getText().toString().trim();
         String currentContent = binding.editTextContent.getText().toString().trim();
@@ -171,9 +177,4 @@ public class NoteDetailFragment extends Fragment {
         return ColorUtils.calculateLuminance(color) < 0.5;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 }

@@ -85,6 +85,13 @@ public class NoteListFragment extends Fragment {
         });
     }
 
+    // Pulisce il binding per evitare memory leak
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void showContextMenu(Note note, View anchorView) {
         PopupMenu popup = new PopupMenu(requireContext(), anchorView);
         popup.getMenuInflater().inflate(R.menu.note_context_menu, popup.getMenu());
@@ -135,10 +142,4 @@ public class NoteListFragment extends Fragment {
                 .show();
     }
 
-    // Pulisce il binding per evitare memory leak
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 }

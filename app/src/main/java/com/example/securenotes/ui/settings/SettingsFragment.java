@@ -103,15 +103,10 @@ public class SettingsFragment extends Fragment implements
         });
     }
 
-    //Mostra pop-up con titolo personalizzato
-    private void showVerifyPinDialog() {
-        EnterPinDialogFragment dialog = new EnterPinDialogFragment();
-        // Passa il titolo "Insert old PIN"
-        Bundle args = new Bundle();
-        args.putString(EnterPinDialogFragment.ARG_TITLE, getString(R.string.insert_old_pin));
-        dialog.setArguments(args);
-        dialog.setTargetFragment(this, 0);
-        dialog.show(getParentFragmentManager(), "VerifyPinDialog");
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     //Callback chiamata quando il vecchio PIN è corretto.
@@ -124,13 +119,6 @@ public class SettingsFragment extends Fragment implements
                 .commit();
         Toast.makeText(getContext(), R.string.create_pin, Toast.LENGTH_SHORT).show();
     }
-
-    private void showBackupPasswordDialog() {
-        BackupPasswordDialogFragment dialog = new BackupPasswordDialogFragment();
-        dialog.setTargetFragment(this, 0);
-        dialog.show(getParentFragmentManager(), "BackupDialog");
-    }
-
 
     //lancia il workManager
     @Override
@@ -161,9 +149,21 @@ public class SettingsFragment extends Fragment implements
                 });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    //Mostra pop-up con titolo personalizzato
+    private void showVerifyPinDialog() {
+        EnterPinDialogFragment dialog = new EnterPinDialogFragment();
+        // Passa il titolo "Insert old PIN"
+        Bundle args = new Bundle();
+        args.putString(EnterPinDialogFragment.ARG_TITLE, getString(R.string.insert_old_pin));
+        dialog.setArguments(args);
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getParentFragmentManager(), "VerifyPinDialog");
     }
+
+    private void showBackupPasswordDialog() {
+        BackupPasswordDialogFragment dialog = new BackupPasswordDialogFragment();
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getParentFragmentManager(), "BackupDialog");
+    }
+
 }

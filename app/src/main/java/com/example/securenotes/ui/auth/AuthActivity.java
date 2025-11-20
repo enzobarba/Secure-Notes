@@ -32,6 +32,20 @@ public class AuthActivity extends AppCompatActivity implements
 
     private boolean shouldShowBiometricOnResume = false;
 
+    // --- Callback dai Fragment ---
+
+    // Chiamato da CreatePinFragment quando il PIN è stato salvato
+    @Override
+    public void onPinCreated() {
+        navigateToMainApp();
+    }
+
+    // Chiamato da EnterPinFragment quando il PIN è corretto
+    @Override
+    public void onPinAuthenticated() {
+        navigateToMainApp();
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +71,6 @@ public class AuthActivity extends AppCompatActivity implements
             }
         }
     }
-
 
     // App torna dal background: imposta il flag
     @Override
@@ -149,21 +162,6 @@ public class AuthActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish(); // Chiude AuthActivity
-    }
-
-
-    // --- Callback dai Fragment ---
-
-    // Chiamato da CreatePinFragment quando il PIN è stato salvato
-    @Override
-    public void onPinCreated() {
-        navigateToMainApp();
-    }
-
-    // Chiamato da EnterPinFragment quando il PIN è corretto
-    @Override
-    public void onPinAuthenticated() {
-        navigateToMainApp();
     }
 
     private boolean isDeviceRooted() {

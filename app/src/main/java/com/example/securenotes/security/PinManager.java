@@ -20,6 +20,45 @@ public class PinManager {
     private static final String KEY_PIN_HASH = "pin_hash";
     private static final String PIN_MASTER_KEY_ALIAS = "secure_notes_pin_master_key";
 
+    // Salva l'hash del PIN (usato in Crea PIN / Cambia PIN)
+    public static void savePin(Context context, String pin) {
+        try {
+            String pinHash = hashPin(pin);
+            SharedPreferences prefs = getEncryptedPrefs(context);
+            prefs.edit().putString(KEY_PIN_HASH, pinHash).apply();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //usato in Login / verifica pre cambio PIN
+    public static boolean isPinCorrect(Context context, String pinToVerify) {
+        try {
+            SharedPreferences prefs = getEncryptedPrefs(context);
+            String savedHash = prefs.getString(KEY_PIN_HASH, null);
+            if (savedHash == null) {
+                return false;
+            }
+            String hashToVerify = hashPin(pinToVerify);
+            // Confronta gli hash dei PIN
+            return savedHash.equals(hashToVerify);
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Controlla se l'utente ha mai impostato un PIN (usato all'avvio dell' app)
+    public static boolean isPinSet(Context context) {
+        try {
+            SharedPreferences prefs = getEncryptedPrefs(context);
+            return prefs.contains(KEY_PIN_HASH);
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // Helper per ottenere le EncryptedSharedPreferences per il PIN
     private static SharedPreferences getEncryptedPrefs(Context context)
             throws GeneralSecurityException, IOException {
@@ -61,42 +100,4 @@ public class PinManager {
         return hexString.toString();
     }
 
-    // Salva l'hash del PIN (usato in Crea PIN / Cambia PIN)
-    public static void savePin(Context context, String pin) {
-        try {
-            String pinHash = hashPin(pin);
-            SharedPreferences prefs = getEncryptedPrefs(context);
-            prefs.edit().putString(KEY_PIN_HASH, pinHash).apply();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //usato in Login / verifica pre cambio PIN
-    public static boolean isPinCorrect(Context context, String pinToVerify) {
-        try {
-            SharedPreferences prefs = getEncryptedPrefs(context);
-            String savedHash = prefs.getString(KEY_PIN_HASH, null);
-            if (savedHash == null) {
-                return false;
-            }
-            String hashToVerify = hashPin(pinToVerify);
-            // Confronta gli hash dei PIN
-            return savedHash.equals(hashToVerify);
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    // Controlla se l'utente ha mai impostato un PIN (usato all'avvio dell' app)
-    public static boolean isPinSet(Context context) {
-        try {
-            SharedPreferences prefs = getEncryptedPrefs(context);
-            return prefs.contains(KEY_PIN_HASH);
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 }

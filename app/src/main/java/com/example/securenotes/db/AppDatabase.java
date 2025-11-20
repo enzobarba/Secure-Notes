@@ -11,8 +11,8 @@ import net.sqlcipher.database.SupportFactory;
 @Database (entities = {Note.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase{
 
-    public abstract NoteDao noteDao ();
     private static AppDatabase instance;
+    public abstract NoteDao noteDao ();
 
     public static synchronized AppDatabase getInstance (Context context) {
 

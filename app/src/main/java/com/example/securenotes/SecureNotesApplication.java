@@ -17,10 +17,8 @@ public class SecureNotesApplication extends Application implements DefaultLifecy
 
     private static final String PREFS_NAME = "app_settings";
     private static final String KEY_TIMEOUT = "timeout_ms";
-
     private static final long DEFAULT_TIMEOUT = 3 * 60 * 1000;
     private static final long CACHE_CLEANUP_MS = 10 * 1000;
-
     private long backgroundTime = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable clearCacheTask = this::clearCache;

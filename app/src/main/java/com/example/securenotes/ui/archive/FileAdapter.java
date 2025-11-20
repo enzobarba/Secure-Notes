@@ -22,12 +22,11 @@ public class FileAdapter extends ListAdapter<File, FileAdapter.FileViewHolder> {
         void onItemLongClick(File file, View view);
     }
     private OnItemLongClickListener longClickListener;
+    private OnFileClickListener listener;
 
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.longClickListener = listener;
     }
-
-    private OnFileClickListener listener;
 
     public void setOnItemClickListener(OnFileClickListener listener) {
         this.listener = listener;

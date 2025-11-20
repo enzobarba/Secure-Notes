@@ -63,13 +63,6 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
         });
     }
 
-    // Metodo helper per caricare i fragment principali (Note/File)
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, fragment)
-                .commit();
-    }
-
     @Override
     public void navigateToDetail(int noteId, String title, String content, int color, boolean isPinned) {
         NoteDetailFragment detailFragment = new NoteDetailFragment();
@@ -97,5 +90,12 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
         Toast.makeText(this, R.string.pin_changed, Toast.LENGTH_SHORT).show();
         // Torna indietro al SettingsFragment
         getSupportFragmentManager().popBackStack();
+    }
+
+    // Metodo helper per caricare i fragment principali (Note/File)
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container, fragment)
+                .commit();
     }
 }

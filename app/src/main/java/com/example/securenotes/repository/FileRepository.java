@@ -30,14 +30,6 @@ public class FileRepository {
         this.executor = Executors.newSingleThreadExecutor();
     }
 
-    private File getSecureDir(Context context) {
-        File dir = new File(context.getFilesDir(), SECURE_DIR_NAME);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        return dir;
-    }
-
     public List<File> loadFiles(Context context) {
         File[] files = getSecureDir(context).listFiles();
         if (files != null) {
@@ -123,6 +115,22 @@ public class FileRepository {
         return fileToDelete.delete();
     }
 
+    public void shutdown() {
+        executor.shutdown();
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    private File getSecureDir(Context context) {
+        File dir = new File(context.getFilesDir(), SECURE_DIR_NAME);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
     // Helper per ottenere il nome del file dall'Uri
     private String getFileNameFromUri(Context context, Uri uri) {
         String fileName = null;
@@ -139,13 +147,5 @@ public class FileRepository {
             fileName = "imported_file_" + System.currentTimeMillis();
         }
         return fileName;
-    }
-
-    public void shutdown() {
-        executor.shutdown();
-    }
-
-    public ExecutorService getExecutor() {
-        return executor;
     }
 }

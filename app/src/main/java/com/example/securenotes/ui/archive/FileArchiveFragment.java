@@ -98,6 +98,26 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
         fileViewModel.refreshFileList();
     }
 
+    // Pulisce il binding
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    /*Viene chiamato dal 'EnterPinDialogFragment'
+    quando l'utente inserisce il PIN corretto.
+    */
+    @Override
+    public void onPinAuthDialogSucceeded() {
+        // Controlla se c'è un file in attesa
+        if (fileToOpen != null) {
+            fileViewModel.decryptAndPrepareFile(fileToOpen);
+            // Reset file in attesa per sicurezza
+            fileToOpen = null;
+        }
+    }
+
     // Raggruppa gli osservatori LiveData
     private void observeViewModel() {
 
@@ -190,19 +210,6 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
         dialog.show(getParentFragmentManager(), "EnterPinDialog");
     }
 
-    /*Viene chiamato dal 'EnterPinDialogFragment'
-    quando l'utente inserisce il PIN corretto.
-    */
-    @Override
-    public void onPinAuthDialogSucceeded() {
-        // Controlla se c'è un file in attesa
-        if (fileToOpen != null) {
-            fileViewModel.decryptAndPrepareFile(fileToOpen);
-            // Reset file in attesa per sicurezza
-            fileToOpen = null;
-        }
-    }
-
     // Lancia l'Intent per aprire il file (chiamato dal LiveData)
     private void openFileWithIntent(Uri fileUri) {
         try {
@@ -251,10 +258,4 @@ public class FileArchiveFragment extends Fragment implements EnterPinDialogFragm
                 == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
-    // Pulisce il binding
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 }

@@ -37,7 +37,7 @@ The project utilizes a multi-layered security approach, known as "Defense in Dep
 ### Deliverables
 * **Final APK:** `SecureNotes.apk` (Signed and Obfuscated).
 * **Source Code:** This repository, often delivered as a clean `.zip`.
-* **Technical Document:** (5-6 page report detailing the implementation choices and security model).
+* **Technical Document:** brief report detailing the implementation choices and security model.
 
 ### How to Build & Verification
 

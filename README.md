@@ -26,7 +26,7 @@ The project utilizes a multi-layered security approach, known as "Defense in Dep
 | **File Encryption** | File Storage | **EncryptedFile (Jetpack Security)** | Encrypts binary file contents. |
 | **Key Management** | `SecurityDbManager` & `PinManager` | **Android Keystore (TEE)** + **EncryptedSharedPreferences** | Protects the cryptographic keys using hardware binding. |
 | **Runtime Defense** | `AuthActivity.isDeviceRooted()` | **RootBeer** | Prevents execution on compromised devices to block memory scraping and system access. |
-| **Integrity Check** | `AuthActivity.isDeviceTampered()` | **Signature Hash Verification** | Prevents the app from running if it has been modified or re-signed by an attacker (Tamper Detection). |
+| **Integrity Check** | `AuthActivity.isAppTampered()` | **Signature Hash Verification** | Prevents the app from running if it has been modified or re-signed by an attacker (Tamper Detection). |
 | **Perimeter Defense**| `SecureNotesApplication` | **ProcessLifecycleOwner** + **Handler** | Implements the configurable timeout and the aggressive **cache cleanup** (deletes cleartext files after 10s of background activity) to mitigate data leakage. |
 | **Code Structure** | Build Config | **R8 Obfuscation** | Scrambles application logic and class names to deter static reverse engineering. |
 
@@ -39,16 +39,25 @@ The project utilizes a multi-layered security approach, known as "Defense in Dep
 * **Source Code:** This repository, often delivered as a clean `.zip`.
 * **Technical Document:** (5-6 page report detailing the implementation choices and security model).
 
-### How to Build (For Verification)
-1.  **Prerequisites:** Android SDK 34+ and the private signing key (`.jks`).
-2.  **Obfuscation:** R8 is active for the `release` build type (`minifyEnabled = true`).
-3.  **Final Build:** Use the Build Menu to generate the **Signed APK** using the provided keystore.
+### How to Build & Verification
+
+> **⚠️ IMPORTANT NOTE:** The source code is explicitly configured to verify the **Release** signature hash (Tamper Detection).
+>
+> If you run the project in **Debug** mode directly from Android Studio (using the default debug key), the integrity check will fail by design, showing an "App Tampered" error.
+>
+> **To test the fully functional application, please install the provided signed `SecureNotes.apk`.**
+
+1.  **Prerequisites:** Android SDK 34+.
+2.  **Obfuscation:** R8 is configured and active for the `release` build type (`minifyEnabled = true`).
+3.  **Rebuilding Release:** To rebuild a working Release APK from source, you must generate a new Keystore, determine its SHA-256 signature hash, and update the verification logic in `AuthActivity.java` before signing.
+
+---
 
 ## 📜 License
 
 This project is released under the **MIT License**.
 
-```markdown
+```text
 Copyright (c) 2025 Vincenzo Barba
 
 Permission is hereby granted, free of charge, to any person
@@ -71,4 +80,3 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
-

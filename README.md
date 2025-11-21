@@ -39,7 +39,7 @@ The project utilizes a multi-layered security approach, known as "Defense in Dep
 * **Technical Document:** (5-6 page report detailing the implementation choices and security model).
 
 ### How to Build (For Verification)
-1.  **Prerequisites:** Android SDK 34+ and the private signing key (`keystore_esame.jks`).
+1.  **Prerequisites:** Android SDK 34+ and the private signing key (`.jks`).
 2.  **Obfuscation:** R8 is active for the `release` build type (`minifyEnabled = true`).
 3.  **Final Build:** Use the Build Menu to generate the **Signed APK** using the provided keystore.
 

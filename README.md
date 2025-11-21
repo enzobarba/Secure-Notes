@@ -1,1 +1,53 @@
-# Secure-Notes
+# 🔒 SecureNotes - Encrypted Data Vault (University Project)
+
+This Android application, developed in Java, manages personal notes and stores sensitive files (e.g., PDFs, images). Its primary focus is to deliver maximum data security through rigorous persistence and runtime standards, adhering to modern Android development best practices.
+
+## 🚀 Project Overview and Goals
+
+This project successfully implements all core requirements (MVVM, Jetpack Security, SQLCipher, WorkManager) defined in the assignment brief.
+
+### Core Features
+* **Encrypted Notes:** Standard creation, modification, and deletion of notes. Includes custom features like **Pin/Unpin** and **Color-coding**.
+* **Secure File Archive:** Importation and viewing of external files (PDF, image, document) using specialized encryption.
+* **Biometric Access:** Mandatory login via **Biometric API** (Fingerprint/Face) with a secure **PIN Fallback**.
+* **Runtime Security (RASP):** Active device integrity checks and root detection.
+* **Configurable Session Timeout:** Automatically locks the application after user-defined inactivity (default 3 minutes), forcing re-authentication.
+* **Encrypted Backup:** Exports a user-generated, password-protected archive (`.zip.enc`) for disaster recovery.
+
+---
+
+## 🛡️ Security Architecture & Technology Stack
+
+The project utilizes a multi-layered security approach, known as "Defense in Depth," where the failure of one layer does not compromise the data.
+
+| Layer | Component | Technology Used | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Data Encryption** | Database Storage | **Room + SQLCipher (AES-256)** | Encrypts the entire SQLite database file (notes) on disk. |
+| **File Encryption** | File Storage | **EncryptedFile (Jetpack Security)** | Encrypts binary file contents (`Funzionalità 3`). |
+| **Key Management** | `SecurityDbManager` & `PinManager` | **Android Keystore (TEE)** + **EncryptedSharedPreferences** | Protects the cryptographic keys using hardware binding. |
+| **Integrity Check** | `AuthActivity` | **Signature Hash Verification** | Prevents the app from running if it has been modified or re-signed by an attacker (Tamper Detection). |
+| **Perimeter Defense**| `SecureNotesApplication` | **ProcessLifecycleOwner** + **Handler** | Implements the configurable timeout and the aggressive **cache cleanup** (deletes cleartext files after 10s of background activity) to mitigate data leakage. |
+| **Code Structure** | Build Config | **R8 Obfuscation** | Scrambles application logic and class names to deter static reverse engineering. |
+
+---
+
+## 🛠️ Build and Delivery
+
+### Deliverables
+* **Final APK:** `SecureNotes.apk` (Signed and Obfuscated).
+* **Source Code:** This repository, often delivered as a clean `.zip`.
+* **Technical Document:** (5-6 page report detailing the implementation choices and security model).
+
+### How to Build (For Verification)
+1.  **Prerequisites:** Android SDK 34+ and the private signing key (`keystore_esame.jks`).
+2.  **Obfuscation:** R8 is active for the `release` build type (`minifyEnabled = true`).
+3.  **Final Build:** Use the Build Menu to generate the **Signed APK** using the provided keystore.
+
+## 📜 License
+
+This project is released under the **MIT License**.
+
+```markdown
+Copyright (c) 2025 [YOUR FULL NAME]
+
+(Standard MIT License text follows...)

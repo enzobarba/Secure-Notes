@@ -25,7 +25,8 @@ The project utilizes a multi-layered security approach, known as "Defense in Dep
 | **Data Encryption** | Database Storage | **Room + SQLCipher (AES-256)** | Encrypts the entire SQLite database file (notes) on disk. |
 | **File Encryption** | File Storage | **EncryptedFile (Jetpack Security)** | Encrypts binary file contents. |
 | **Key Management** | `SecurityDbManager` & `PinManager` | **Android Keystore (TEE)** + **EncryptedSharedPreferences** | Protects the cryptographic keys using hardware binding. |
-| **Integrity Check** | `AuthActivity` | **Signature Hash Verification** | Prevents the app from running if it has been modified or re-signed by an attacker (Tamper Detection). |
+| **Runtime Defense** | `AuthActivity.isDeviceRooted()` | **RootBeer** | Prevents execution on compromised devices to block memory scraping and system access. |
+| **Integrity Check** | `AuthActivity.isDeviceTampered()` | **Signature Hash Verification** | Prevents the app from running if it has been modified or re-signed by an attacker (Tamper Detection). |
 | **Perimeter Defense**| `SecureNotesApplication` | **ProcessLifecycleOwner** + **Handler** | Implements the configurable timeout and the aggressive **cache cleanup** (deletes cleartext files after 10s of background activity) to mitigate data leakage. |
 | **Code Structure** | Build Config | **R8 Obfuscation** | Scrambles application logic and class names to deter static reverse engineering. |
 

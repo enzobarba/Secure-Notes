@@ -1,4 +1,4 @@
-package com.example.securenotes.service;
+package com.example.securenotes.security;
 
 import android.content.ContentValues; // Per MediaStore
 import android.content.Context;

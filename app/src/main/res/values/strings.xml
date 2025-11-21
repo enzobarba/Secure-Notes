@@ -60,8 +60,10 @@
     <string name="file_deleted">File deleted</string>
     <string name="file_not_deleted">Error during deletion file</string>
     <string name="device_not_safe">Device Not Safe</string>
-    <string name ="advice_device_not_safe">"Root detected in this device.\n\n" +
+    <string name ="rooted_device">"Root detected in this device.\n\n" +
     "For security of your encrypted data, SecureNotes can't run in a compromise environment."</string>
+    <string name="tampered_app">Integrity of application is compromised. Impossible to run Secure Notes</string>
     <string name="close_app">Close App</string>
+
 
 </resources>

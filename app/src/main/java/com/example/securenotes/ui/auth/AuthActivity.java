@@ -15,6 +15,14 @@ import com.example.securenotes.ui.dashboard.MainActivity;
 import java.util.concurrent.Executor;
 import com.scottyab.rootbeer.RootBeer;
 import android.app.AlertDialog;
+//import necessari per TamperDetection
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.util.Base64;
+import android.util.Log;
+import java.security.MessageDigest;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 /*
 1. Controlla se esiste un PIN.
@@ -27,24 +35,17 @@ public class AuthActivity extends AppCompatActivity implements
         CreatePinFragment.PinCreationListener,
         EnterPinFragment.PinAuthenticationListener {
 
+    /*
+    Variabile CRITICA
+    Questo è l'Hash SHA-256 della firma digitale dell'APK originale.
+    Da sostituire con hash presente
+    nel Logcat dopo aver eseguito l'app in modalità Debug/Release.
+    */
+    private static final String REAL_SIGNATURE_HASH = "uM3nPtlKzBoywPmxjKiikgLCKRtK+FX2ZDfjTdMA3UY=";
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
 
     private boolean shouldShowBiometricOnResume = false;
-
-    // --- Callback dai Fragment ---
-
-    // Chiamato da CreatePinFragment quando il PIN è stato salvato
-    @Override
-    public void onPinCreated() {
-        navigateToMainApp();
-    }
-
-    // Chiamato da EnterPinFragment quando il PIN è corretto
-    @Override
-    public void onPinAuthenticated() {
-        navigateToMainApp();
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,9 +58,15 @@ public class AuthActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_auth);
 
         if(isDeviceRooted()){
-            showRootErrorAndExit();
+            showFatalErrorAndExit(R.string.device_not_safe, R.string.rooted_device);
             return;
         }
+
+        if (isAppTampered()) {
+            showFatalErrorAndExit(R.string.device_not_safe, R.string.tampered_app);
+            return;
+        }
+
         setupBiometricAuth();
 
         if (savedInstanceState == null) {
@@ -89,6 +96,20 @@ public class AuthActivity extends AppCompatActivity implements
             shouldShowBiometricOnResume = false;
             showBiometricPrompt();
         }
+    }
+
+    // --- Callback dai Fragment ---
+
+    // Chiamato da CreatePinFragment quando il PIN è stato salvato
+    @Override
+    public void onPinCreated() {
+        navigateToMainApp();
+    }
+
+    // Chiamato da EnterPinFragment quando il PIN è corretto
+    @Override
+    public void onPinAuthenticated() {
+        navigateToMainApp();
     }
 
     // Prepara il pop-up biometrico e i suoi callback
@@ -169,10 +190,39 @@ public class AuthActivity extends AppCompatActivity implements
         return rootBeer.isRooted();
     }
 
-    private void showRootErrorAndExit() {
+    private boolean isAppTampered() {
+        try {
+            // Ottiene le info sul pacchetto e le firme
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(
+                    getPackageName(),
+                    PackageManager.GET_SIGNATURES
+            );
+            // Prende la prima firma (il certificato)
+            Signature signature = packageInfo.signatures[0];
+
+            // Calcola l'Hash SHA-256
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(signature.toByteArray());
+            String currentSignatureHash = Base64.encodeToString(md.digest(), Base64.NO_WRAP);
+
+            // Logga hash per copiarlo sopra
+            Log.e("TAMPER_CHECK", "CURRENT HASH: " + currentSignatureHash);
+
+            return !currentSignatureHash.equals(REAL_SIGNATURE_HASH);
+
+        } catch (NameNotFoundException e) {
+            // Se non trova il package, è un errore critico (si assume manomissione)
+            return true;
+        } catch (Exception e) {
+            // Se c'è un errore nella crittografia (MessageDigest), si assume manomissione
+            return true;
+        }
+    }
+
+    private void showFatalErrorAndExit(int titleResId, int messageResId) {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.device_not_safe)
-                .setMessage(R.string.advice_device_not_safe)
+                .setTitle(getString(titleResId))
+                .setMessage(getString(messageResId))
                 .setCancelable(false) // L'utente NON può cliccare fuori per chiuderlo
                 .setPositiveButton(R.string.close_app, (dialog, which) -> {
                     // Chiude l'app completamente

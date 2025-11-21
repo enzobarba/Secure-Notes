@@ -60,9 +60,10 @@
     <string name="file_deleted">File cancellato</string>
     <string name="file_not_deleted">Errore durante la cancellazione del file</string>
     <string name="device_not_safe">Device insicuro</string>
-    <string name ="advice_device_not_safe">"Il dispositivo ha i permessi di root.\n\n" +
+    <string name ="rooted_device">"Il dispositivo ha i permessi di root.\n\n" +
     "Per la sicurezza dei tuoi dati cifrati, " +
         "SecureNotes non può essere eseguito in un ambiente insicuro."</string>
+    <string name="tampered_app">Integrità dell\'applicazione è compromessa. Impossibile eseguire SecureNotes</string>
     <string name="close_app">Chiudi App</string>
 
 

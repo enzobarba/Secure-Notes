@@ -10,6 +10,7 @@ import androidx.biometric.BiometricManager;
 import androidx.core.content.ContextCompat;
 import android.view.WindowManager;
 import com.example.securenotes.R;
+import com.example.securenotes.security.Obfuscator;
 import com.example.securenotes.security.PinManager;
 import com.example.securenotes.ui.dashboard.MainActivity;
 import java.util.concurrent.Executor;
@@ -35,13 +36,6 @@ public class AuthActivity extends AppCompatActivity implements
         CreatePinFragment.PinCreationListener,
         EnterPinFragment.PinAuthenticationListener {
 
-    /*
-    Variabile CRITICA
-    Questo è l'Hash SHA-256 della firma digitale dell'APK originale.
-    Da sostituire con hash presente
-    nel Logcat dopo aver eseguito l'app in modalità Debug/Release.
-    */
-    private static final String REAL_SIGNATURE_HASH = "uM3nPtlKzBoywPmxjKiikgLCKRtK+FX2ZDfjTdMA3UY=";
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
 
@@ -205,8 +199,15 @@ public class AuthActivity extends AppCompatActivity implements
             md.update(signature.toByteArray());
             String currentSignatureHash = Base64.encodeToString(md.digest(), Base64.NO_WRAP);
 
-            // Logga hash per copiarlo sopra
-            Log.e("TAMPER_CHECK", "CURRENT HASH: " + currentSignatureHash);
+            // Logga hash (prima in chiaro) di cui fare XOR il cui risultato è in OBFUSCATED_HASH
+            //Log.e("TAMPER_CHECK", "CURRENT HASH: " + currentSignatureHash);
+
+            String OBFUSCATED_HASH = "ff+OJq7efIsITsEC734DEQmqpPE7nplCnEQudlcDVzc=";
+
+            //La stringa vera esiste in RAM solo per questo millisecondo.
+            String REAL_SIGNATURE_HASH = Obfuscator.xor(OBFUSCATED_HASH);
+
+            //Log.e("HASHXORED", "HASH XORED: " + REAL_SIGNATURE_HASH);
 
             return !currentSignatureHash.equals(REAL_SIGNATURE_HASH);
 

@@ -48,6 +48,6 @@ The project utilizes a multi-layered security approach, known as "Defense in Dep
 This project is released under the **MIT License**.
 
 ```markdown
-Copyright (c) 2025 [YOUR FULL NAME]
+Copyright (c) 2025 [Vincenzo Barba]
 
 (Standard MIT License text follows...)
